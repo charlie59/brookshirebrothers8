@@ -4,6 +4,7 @@
 
 # Ignore PHPSTorm files
 /.idea
+.DS_Store
 
 # Ignore configuration files that may contain sensitive information
 /web/sites/*/*settings*.php
