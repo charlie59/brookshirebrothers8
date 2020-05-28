@@ -1,0 +1,73 @@
+<?php
+
+use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
+use Drupal\Component\Plugin\Exception\PluginNotFoundException;
+
+/**
+ * Preprocessing for Blocks.
+ *
+ * @param $variables
+ */
+function brookshirebrothers_preprocess_block(&$variables) {
+  if (isset($variables['elements']['#id'])) {
+    switch ($variables['elements']['#id']) {
+      case 'copyrightandlegal':
+        $variables['date'] = date("Y");
+        break;
+    }
+  }
+}
+
+/**
+ * Preprocessing for html.
+ *
+ * @param $variables
+ */
+function brookshirebrothers_preprocess_html(&$variables) {
+  $google_maps_api_key = theme_get_setting('google_maps_api_key');
+  $variables['#attached']['drupalSettings']['brookshirebrothers']['google_maps_api_key'] = $google_maps_api_key;
+  $variables['#attached']['library'][] = 'brookshirebrothers/user-locator';
+}
+
+/**
+ * Preprocessing for nodes.
+ *
+ * @param $variables
+ * @throws InvalidPluginDefinitionException
+ * @throws PluginNotFoundException
+ */
+function brookshirebrothers_preprocess_node(&$variables) {
+  switch ($variables['node']->getType()) {
+    case 'result':;
+      $terms = Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree('department');
+      $departments = [];
+      foreach ($terms as $term) {
+        $departments[] = [
+          'id' => $term->tid,
+          'name' => $term->name,
+        ];
+      }
+      $variables['departments']  = $departments;
+
+      $terms = Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree('specification');
+      $specifications = [];
+      foreach ($terms as $term) {
+        $specifications[] = [
+          'id' => $term->tid,
+          'name' => $term->name,
+        ];
+      }
+      $variables['specifications']  = $specifications;
+
+      $terms = Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree('locations');
+      $locations = [];
+      foreach ($terms as $term) {
+        $locations[] = [
+          'id' => $term->tid,
+          'name' => $term->name,
+        ];
+      }
+      $variables['locations']  = $locations;
+  }
+}
+

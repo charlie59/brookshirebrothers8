@@ -1,0 +1,120 @@
+@media only screen and (max-width: 767px) {
+  #block-menuheader {
+    .menu {
+      display: flex;
+      justify-content: space-evenly;
+      li {
+        margin: 0;
+        a {
+          font-size: 0.8rem;
+        }
+      }
+    }
+  }
+  .region-header {
+    display: grid;
+    grid-template-columns: auto;
+    grid-row-gap: 1rem;
+    > div {
+      text-align: center;
+    }
+    #block-sitebranding {
+      grid-row: unset;
+    }
+    #search-block-form {
+      float: none;
+    }
+    #block-shoppingbutton {
+      grid-row: unset;
+      grid-column: unset;
+      #shopping-button {
+        float: none;
+      }
+    }
+  }
+  #superfish-main {
+    display: none;
+    visibility: hidden;
+  }
+
+  /* Home Page small screens */
+  .path-frontpage {
+    .region-content-top {
+      #block-infolinks {
+        .field--name-body {
+          display: block;
+          grid-template-columns: unset;
+        }
+      }
+    }
+    .region-content-bottom {
+      display: block;
+      grid-template-columns: unset;
+    }
+  }
+}
+
+/* intermediate */
+@media only screen and (max-width: 990px) {
+  .region-footer {
+    grid-template-columns: auto;
+    text-align: center;
+  }
+  .layout-content {
+    display: block;
+    margin: 0;
+    .layout-sidebar-first {
+      display: none;
+      visibility: hidden;
+    }
+  }
+}
+
+/* Tablet/Desktop */
+@media only screen and (min-width: 768px) {
+  #superfish-main {
+    background-color: rgb(226,35,26);
+    margin: 0 -10px!important;
+    display: flex;
+    justify-content: space-evenly;
+    &:before {
+      width: 10px;
+      height: 10px;
+      content: "";
+      position: absolute;
+      left: auto;
+      right: -10px;
+      bottom: -10px;
+      background: url(../images/nav-tip-right.png) no-repeat;
+    }
+    &:after {
+      width: 10px;
+      height: 10px;
+      content: "";
+      position: absolute;
+      left: -10px;
+      bottom: -10px;
+      background: url(../images/nav-tip-left.png) no-repeat;
+    }
+    li {
+      white-space: nowrap;
+      a {
+        text-decoration: none;
+        color: #fff;
+        padding: 1rem 0;
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+      ul {
+        background-color: rgb(226,35,26);
+        li {
+          a {
+            font-size: 0.9rem;
+            padding: 1em 1.5em;
+          }
+        }
+      }
+    }
+  }
+}
