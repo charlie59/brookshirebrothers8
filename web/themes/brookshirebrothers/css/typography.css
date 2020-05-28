@@ -1,0 +1,14 @@
+body {
+  font-family: "Nunito", sans-serif, Arial;
+  font-size: 1rem;
+}
+
+a {
+  text-decoration: underline;
+  color: #000;
+}
+a:hover {
+  text-decoration: none;
+}
+
+/*# sourceMappingURL=typography.css.map */

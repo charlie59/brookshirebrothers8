@@ -1,0 +1,27 @@
+body {
+  margin: 0;
+  color: #736357;
+  background: url(../images/bg-body.png);
+}
+
+.layout-container {
+  max-width: 1024px;
+  margin: 0 auto;
+  padding: 0 1rem 1rem;
+}
+
+.content-area {
+  width: 100%;
+  border-radius: 3px;
+  -webkit-border-radius: 3px;
+  box-shadow: 0 0 8px -2px #000;
+  background: #fff;
+  margin: 0 0 1rem;
+  padding: 0;
+}
+
+.layout-content {
+  display: grid;
+  grid-template-columns: 20% auto;
+  margin: 0 15px 0 0;
+}

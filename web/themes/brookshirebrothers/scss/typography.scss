@@ -1,0 +1,12 @@
+body {
+  font-family: 'Nunito', sans-serif, Arial;
+  font-size: 1rem;
+}
+
+a {
+  text-decoration: underline;
+  color: #000;
+  &:hover {
+    text-decoration: none;
+  }
+}

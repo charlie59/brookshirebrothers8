@@ -1,0 +1,27 @@
+name: Brookshire Brothers
+type: theme
+base theme: classy
+description: 'Drupal 8 theme for Brookshire Brothers.'
+version: 8.1
+core: 8.x
+core_version_requirement: ^8 || ^9
+regions:
+  top_menu: 'Top Menu'
+  header: 'Header'
+  main_menu: 'Main Menu'
+  content_top: 'Content Top'
+  content: 'Content'
+  content_bottom: 'Content Bottom'
+  sidebar_first: 'Sidebar First'
+  sidebar_second: 'Sidebar Second'
+  footer: 'Footer'
+  legal: 'Copyright and Logos'
+  inactive: 'Inactive Blocks'
+libraries:
+  - brookshirebrothers/global-styling
+  - brookshirebrothers/global-scripts
+  - brookshirebrothers/source-sans-pro
+  - brookshirebrothers/robot-condensed
+  - brookshirebrothers/open-sans
+  - brookshirebrothers/nunito
+  - brookshirebrothers/fontawesome
