@@ -1,4 +1,4 @@
-(function ($, Drupal) {
+(function ($, Drupal, drupalSettings) {
   "use strict";
   Drupal.behaviors.StoreLocator = {
     attach: function (context, settings) {
@@ -7,7 +7,7 @@
       if (userZip) {
         searchBox.once("StoreLocator").val(userZip);
       }
-      $("#moreOptions").once("StoreLocator").click(function() {
+      $("#moreOptions").once("StoreLocator").click(function () {
         $("#moreOptionsSection").toggle();
       });
 
@@ -15,30 +15,66 @@
       let storeLocations;
       let distanceSelect = $('#filter-distance');
       let overClass = 'over';
+      let html;
 
-      function sendForm() {
-        $.ajax({
-          type: 'get',
-          cache: false,
-          url: '/store-locator',
-          data: 'ajax=1',
-          dataType: 'text',
-          success: function (data) {
-            let selectedOption = distanceSelect.children().eq(distanceSelect.get(0).selectedIndex);
-            let selectedDistance = parseInt(selectedOption.text(), 10);
-            if (selectedOption.hasClass(overClass)) {
-              selectedDistance = 99999;
-            }
-
-            $(data).appendTo($('#storeResults'));
-
+      function getPosition(address) {
+        let d = $.Deferred();
+        let geoCoder = new google.maps.Geocoder();
+        geoCoder.geocode({'address': address}, function (results, status) {
+          if (status === google.maps.GeocoderStatus.OK) {
+            d.resolve(results);
           }
         });
+        return d;
       }
-      $("#searchSubmit").click(function(e){
+
+      function sendForm() {
+        if (userZip.match(/^[0-9]5$/) == null) {
+          searchBox.addClass("is-danger").focus().next('p').removeClass('is-hidden');
+        } else {
+          let selectedOption = distanceSelect.children().eq(distanceSelect.get(0).selectedIndex);
+          let selectedDistance = parseInt(selectedOption.text(), 10);
+          if (selectedOption.hasClass(overClass)) {
+            selectedDistance = 99999;
+          }
+
+          getPosition(userZip).done(function (results) {
+            let currCo_ord = [results[0].geometry.location.lat(), results[0].geometry.location.lng()];
+            let dataObject = getCoordinates(locationCoordinates, currCo_ord, selectedDistance);
+            let html = '';
+            let lat = results[0].geometry.location.lat();
+            let lng = results[0].geometry.location.lng();
+
+            for (let i in dataObject) {
+              if (dataObject.hasOwnProperty(i)) {
+                let num = parseInt(i) + 1;
+                dataObject[i].features[0].properties.i = i;
+                dataObject[i].features[0].properties.num = num;
+                let locality = dataObject[i].features[0].properties.locality.replace(/<[^>]+>/g, '');
+                let city = dataObject[i].features[0].properties.locality.replace(/,.*/g, '');
+                let address = dataObject[i].features[0].properties.address;
+                let address_loc = dataObject[i].features[0].properties.address + ',' + locality;
+                let encoded = address_loc.replace(/[\s]+/g, '+');
+                let info = '<div class="infoDiv">' +
+                  '<a href="https://www.google.com/maps/place/'
+                  + encoded + '" target="_blank" rel="noopener">' + address + ', ' + city + "</a></div>";
+                let storeLocation = [info, dataObject[i].features[0].geometry.coordinates];
+                storeLocations.push(storeLocation);
+                html += tmpl("result_tmpl", dataObject[i].features[0].properties);
+              }
+
+            }
+          });
+
+          $('#storeResults').html(html);
+        }
+      }
+
+      $("#searchSubmit").once("StoreLocator").on("click", function (e) {
         e.preventDefault();
+        console.log("Request submitted");
         sendForm();
       });
     }
   }
-})(jQuery, Drupal);
+})(jQuery, Drupal, drupalSettings);

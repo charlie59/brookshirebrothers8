@@ -2,13 +2,7 @@ global-styling:
   version: VERSION
   css:
     base:
-      css/base.css: { weight: 1 }
-      css/typography.css: { weight: 1 }
-      css/home.css: { weight: 1 }
-      css/menus.css: { weight: 1 }
-      css/regions.css: { weight: 1 }
-      css/forms.css: { weight: 1 }
-      css/media.css: { weight: 1 }
+      css/all.css: { weight: 1 }
 
 global-scripts:
   version: VERSION
