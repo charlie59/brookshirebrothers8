@@ -2,9 +2,10 @@
 #
 # earlier versions of Drupal are tracked in `community/PHP/`
 
-# Ignore PHPSTorm files
+# Ignore PHPStorm, module files, and other system files
 /.idea
 .DS_Store
+/IlluminatedCloud
 
 # Ignore configuration files that may contain sensitive information
 /web/sites/*/*settings*.php
