@@ -20,7 +20,7 @@
         $.ajax({
           type: 'get',
           cache: false,
-          url: form.attr('action'),
+          url: '/store-locator',
           data: 'ajax=1',
           dataType: 'text',
           success: function (data) {
