@@ -71,7 +71,7 @@
 {{ attach_library('brookshirebrothers/store-locator') }}
 <div{{ content_attributes.addClass('store-locator') }}>
 
-  <form id="store-locator" action="/store-locator">
+  <form id="store-locator" action="">
 
     <h1 class="page-title">Find a Store</h1>
 
@@ -83,10 +83,10 @@
     </div>
 
     <div class="field">
-      <label class="label">Search Within</label>
+      <label class="label" for="filter-distance">Search Within</label>
       <div class="control">
         <div class="select">
-          <select>
+          <select id="filter-distance">
             <option>20 miles</option>
             <option>30 miles</option>
             <option>40 miles</option>
@@ -98,11 +98,11 @@
 
     <div class="field">
       <div class="control">
-        <button class="button">Search</button>
+        <button class="button" id="searchSubmit">Search</button>
       </div>
     </div>
 
-    <h3 id="moreOptions">Advanced Search</h3>
+    <h3 id="moreOptions" class="is-link"><i class="fas fa-angle-double-down"> </i> Advanced Search</h3>
 
     <div id="moreOptionsSection">
 
@@ -144,4 +144,6 @@
     </div>
 
   </form>
+
+  <div id="storeResults"></div>
 </div>
