@@ -1,0 +1,6 @@
+name: 'Brookshire Brothers'
+type: module
+description: 'Custom Functionality for this site.'
+core: 8.x
+core_version_requirement: ^8 || ^9
+package: 'Brookshire Brothers'

@@ -1,0 +1,7 @@
+brookshirebrothers.store_locator:
+  path: '/store-locator'
+  defaults:
+    _title: 'Find a Store'
+    _form: '\Drupal\brookshirebrothers\Form\StoreLocatorForm'
+  requirements:
+    _permission: 'access content'

@@ -9,7 +9,7 @@
 
     /* Carousel */
     #block-views-block-gallery-show-block-1 {
-      margin: 4px 0 0;
+      margin: 0 0 -12px;
       .carousel {
         width: 100%;
         position: relative;
@@ -99,6 +99,7 @@
 
     /* Info Links */
     #block-infolinks {
+      z-index: 999; /* See #block-views-block-gallery-show-block-1 */
       .field--name-body {
         display: grid;
         grid-template-columns: 25% 25% 25% 25%;
