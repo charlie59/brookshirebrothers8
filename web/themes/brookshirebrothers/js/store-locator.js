@@ -12,6 +12,7 @@
 
       let storeLocations;
       let locationCoordinates = drupalSettings.brookshireBrothers.storeLocator.locationCoordinates;
+      console.log(locationCoordinates);
       let distanceSelect = $('#filter-distance');
       let overClass = 'over';
       let html;

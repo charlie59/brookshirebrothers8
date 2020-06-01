@@ -84,24 +84,16 @@ function brookshirebrothers_preprocess_node(&$variables) {
               type: 'Feature',
               geometry: {
                 type: 'Point',
-                coordinates: \"<?php echo $resul->field_latitude['und'][0]['value'];?>, <?php echo $resul->field_longitude['und'][0]['value'];?>\",
+                coordinates: \"" . $store->get('field_latitude')->value . ", " . $store->get('field_longitude')->value . "\",
               },
               properties: {
-                title: \"<?php print $resul->field_display_title['und'][0]['value'];?>\",
-                address: \"<?php print $resul->gsl_addressfield['und'][0]['thoroughfare'];?>\",
-                locality: \" <?php print $resul->gsl_addressfield['und'][0]['locality'];?>, <?php print $resul->gsl_addressfield['und'][0]['administrative_area'];?> <span><?php print $resul->gsl_addressfield['und'][0]['postal_code'];?></span>\",
-                tel: \"<?php print $resul->field_store_phone['und'][0]['value'];?>\",
-                hrefAd: \"<?php if (isset($node_week)) {
-                  echo
-                  $node_week->field_upload_the_pdf['und'][0]['filename'];
-                }?>\",
-                hrefDetails: \"<?php print drupal_get_path_alias('node/' . $resul->nid);?>\",
+                title: \"" . $store->label() . "\",
               },
-              keywords: \"<?php if (isset($resul->field_department['und'][0])): foreach($resul->field_department['und'] as $term_id): $term = taxonomy_term_load($term_id['tid']);?> <?php echo $term->name;?>,<?php endforeach; ?><?php foreach($resul->field_specification['und'] as $term_id): $term = taxonomy_term_load($term_id['tid']);?> <?php echo $term->name;?>,<?php endforeach; ?><?php endif; ?><?php if (isset($resul->field_locations['und'][0])): foreach($resul->field_locations['und'] as $term_id): $term = taxonomy_term_load($term_id['tid']);?> <?php echo $term->name;?>,<?php endforeach; ?><?php endif; ?>\",
+              keywords: \"\",
             }";
       }
       $locationCoordinates .= ']';
-      $node['#attached']['drupalSettings']['brookshireBrothers']['storeLocator']['locationCoordinates'] = $locationCoordinates;
+      $variables['#attached']['drupalSettings']['brookshireBrothers']['storeLocator']['locationCoordinates'] = $locationCoordinates;
 
   }
 }
