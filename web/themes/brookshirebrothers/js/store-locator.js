@@ -13,6 +13,7 @@
 
       userZip = searchBox.val(); // user might have changed value
       let storeLocations;
+      let locationCoordinates = drupalSettings.brookshireBrothers.storeLocator.locationCoordinates;
       let distanceSelect = $('#filter-distance');
       let overClass = 'over';
       let html;
