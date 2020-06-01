@@ -1,0 +1,16 @@
+<?php
+
+/**
+ * @param $existing
+ * @param $type
+ * @param $theme
+ * @param $path
+ * @return array
+ */
+function bb_theme($existing, $type, $theme, $path) {
+  return [
+    'store_locator' => [
+      'variables' => [],
+    ],
+  ];
+}

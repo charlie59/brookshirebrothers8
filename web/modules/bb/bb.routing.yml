@@ -1,7 +1,7 @@
-brookshirebrothers.store_locator:
+bb.store_locator:
   path: '/store-locator'
   defaults:
+    _controller: '\Drupal\bb\Controller\StoreLocatorController::locatorForm'
     _title: 'Find a Store'
-    _form: '\Drupal\brookshirebrothers\Form\StoreLocatorForm'
   requirements:
     _permission: 'access content'

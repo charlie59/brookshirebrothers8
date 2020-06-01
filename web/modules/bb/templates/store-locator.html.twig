@@ -1,0 +1,80 @@
+{{ attach_library('bb/store-locator') }}
+<div{{ content_attributes.addClass('store-locator') }}>
+
+  <form id="store-locator" action="">
+
+    <h1 class="page-title">Find a Store</h1>
+
+    <div class="field">
+      <label class="label" for="search">Search by City, State or Zip Code</label>
+      <div class="control">
+        <input id="search" class="input is-small" type="text">
+        <p class="help is-danger is-hidden">Is that a five digit U.S. zip code?</p>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="label" for="filter-distance">Search Within</label>
+      <div class="control">
+        <div class="select">
+          <select id="filter-distance">
+            <option>20 miles</option>
+            <option>30 miles</option>
+            <option>40 miles</option>
+            <option class="over">50 miles+</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="control">
+        <button class="button" id="searchSubmit">Search</button>
+      </div>
+    </div>
+
+    <h3 id="moreOptions" class="is-link"><i class="fas fa-angle-double-down"> </i> Advanced Search</h3>
+
+    <div id="moreOptionsSection">
+
+      {% for department in departments %}
+        <div class="field">
+          <div class="control">
+            <label class="checkbox">
+              <input type="checkbox" checked="checked" name="{{ department.id }}">
+              {{ department.name }}
+            </label>
+          </div>
+        </div>
+      {% endfor %}
+
+      <p>Include results with:</p>
+      {% for specification in specifications %}
+        <div class="field">
+          <div class="control">
+            <label class="checkbox">
+              <input type="checkbox" checked="checked" name="{{ specification.id }}">
+              {{ specification.name }}
+            </label>
+          </div>
+        </div>
+      {% endfor %}
+
+      <p>Find locations of:</p>
+      {% for location in locations %}
+        <div class="field">
+          <div class="control">
+            <label class="checkbox">
+              <input type="checkbox" checked="checked" name="{{ location.id }}">
+              {{ location.name }}
+            </label>
+          </div>
+        </div>
+      {% endfor %}
+
+    </div>
+
+  </form>
+
+  <div id="storeResults"></div>
+</div>
