@@ -4711,6 +4711,7 @@ a:hover, .is-link:hover {
 h1.page-title {
   font-size: 2em;
   margin: 0.67em 0;
+  color: #e2231a;
 }
 
 /* Override classy defaults */
@@ -4819,7 +4820,7 @@ ul.menu {
 }
 
 .region-top-menu {
-  padding: 0;
+  padding: 0.5rem 0;
 }
 
 .region-header {

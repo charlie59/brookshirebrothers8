@@ -86,6 +86,15 @@ user-locator:
     - core/jquery.once
     - core/jquery.cookie
 
+google-maps:
+  version: VERSION
+  remote: //maps.googleapis.com
+  license:
+    name: Google Maps Platform License Agreement
+    url: //cloud.google.com/maps-platform/terms/
+  js:
+    //maps.googleapis.com/maps/api/js?key=AIzaSyAQNRPaZd4ibswz8dB7gpOZyajfvtkRaAI&libraries=geometry: { type: external }
+
 store-locator:
   version: VERSION
   js:
@@ -95,4 +104,6 @@ store-locator:
     - core/jquery
     - core/jquery.once
     - core/jquery.cookie
+    - brookshirebrothers/global-scripts
+    - brookshirebrothers/google-maps
 

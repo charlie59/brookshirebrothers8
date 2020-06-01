@@ -17,6 +17,12 @@
       let overClass = 'over';
       let html;
 
+      /**
+       * Gets GeoCoder object from zip code.
+       *
+       * @param address
+       * @returns {JQuery.Deferred<any, any, any>}
+       */
       function getPosition(address) {
         let d = $.Deferred();
         let geoCoder = new google.maps.Geocoder();
@@ -28,19 +34,36 @@
         return d;
       }
 
+      /**
+       * Get co-ordinates of all matching stores.
+       *
+       * @param obj
+       * @param yourCoOrd
+       * @param limit
+       */
+      function getCoordinates(obj, yourCoOrd, limit) {
+        let semiResultsArray = [];
+        let currIndex = 0;
+      }
+
+      /**
+       * Function fired from Submit click.
+       */
       function sendForm() {
-        if (userZip.match(/^[0-9]5$/) == null) {
+        if (userZip.match(/^[0-9]{5}$/) == null) {
           searchBox.addClass("is-danger").focus().next('p').removeClass('is-hidden');
         } else {
           let selectedOption = distanceSelect.children().eq(distanceSelect.get(0).selectedIndex);
-          let selectedDistance = parseInt(selectedOption.text(), 10);
+          let selectedDistance;
           if (selectedOption.hasClass(overClass)) {
             selectedDistance = 99999;
+          } else {
+            selectedDistance = parseInt(selectedOption.text(), 10);
           }
 
           getPosition(userZip).done(function (results) {
-            let currCo_ord = [results[0].geometry.location.lat(), results[0].geometry.location.lng()];
-            let dataObject = getCoordinates(locationCoordinates, currCo_ord, selectedDistance);
+            let currCoOrd = [results[0].geometry.location.lat(), results[0].geometry.location.lng()];
+            let dataObject = getCoordinates(locationCoordinates, currCoOrd, selectedDistance);
             let html = '';
             let lat = results[0].geometry.location.lat();
             let lng = results[0].geometry.location.lng();

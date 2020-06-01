@@ -15,7 +15,7 @@
               };
               let userZip;
               let latLng = pos.lat + "," + pos.lng;
-              let key = drupalSettings.brookshirebrothers.google_maps_api_key;
+              let key = "AIzaSyAQNRPaZd4ibswz8dB7gpOZyajfvtkRaAI";
               // https://developers.google.com/maps/documentation/geocoding/intro#reverse-restricted
               $.getJSON('https://maps.googleapis.com/maps/api/geocode/json?latlng=' + latLng + '&result_type=street_address&key=' + key, function (data) {
                 let timer = setTimeout(stopLookup, 15000); // bail after 15 seconds

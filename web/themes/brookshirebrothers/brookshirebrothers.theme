@@ -24,8 +24,6 @@ function brookshirebrothers_preprocess_block(&$variables) {
  * @param $variables
  */
 function brookshirebrothers_preprocess_html(&$variables) {
-  $google_maps_api_key = theme_get_setting('google_maps_api_key');
-  $variables['#attached']['drupalSettings']['brookshirebrothers']['google_maps_api_key'] = $google_maps_api_key;
   $variables['#attached']['library'][] = 'brookshirebrothers/user-locator';
 }
 
