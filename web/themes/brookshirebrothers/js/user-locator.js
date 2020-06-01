@@ -15,9 +15,10 @@
               };
               let userZip;
               let latLng = pos.lat + "," + pos.lng;
-              let key = "AIzaSyAQNRPaZd4ibswz8dB7gpOZyajfvtkRaAI";
+              /* Hard-coded until I figure out how to define a key in settings and load maps script with that parameter */
+              /* Also in theme libraries file */
               // https://developers.google.com/maps/documentation/geocoding/intro#reverse-restricted
-              $.getJSON('https://maps.googleapis.com/maps/api/geocode/json?latlng=' + latLng + '&result_type=street_address&key=' + key, function (data) {
+              $.getJSON('https://maps.googleapis.com/maps/api/geocode/json?latlng=' + latLng + '&result_type=street_address&key=AIzaSyAQNRPaZd4ibswz8dB7gpOZyajfvtkRaAI', function (data) {
                 let timer = setTimeout(stopLookup, 15000); // bail after 15 seconds
                 // this check should take care of errors
                 if (data.status === 'OK') {

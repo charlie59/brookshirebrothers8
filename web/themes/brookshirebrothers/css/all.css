@@ -4714,6 +4714,10 @@ h1.page-title {
   color: #e2231a;
 }
 
+h3 {
+  margin-bottom: 1rem;
+}
+
 /* Override classy defaults */
 ul.menu {
   margin-left: 0 !important;

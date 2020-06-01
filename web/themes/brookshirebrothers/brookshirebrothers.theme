@@ -36,7 +36,8 @@ function brookshirebrothers_preprocess_html(&$variables) {
  */
 function brookshirebrothers_preprocess_node(&$variables) {
   switch ($variables['node']->getType()) {
-    case 'result':;
+    case 'result':
+      /* Preprocessing for Store Locator */
       $terms = Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree('department');
       $departments = [];
       foreach ($terms as $term) {
@@ -66,6 +67,40 @@ function brookshirebrothers_preprocess_node(&$variables) {
         ];
       }
       $variables['locations']  = $locations;
+
+      $nids = Drupal::entityQuery('node')
+        ->condition('type', 'store_location')
+        ->execute();
+      $nodes = Drupal::entityTypeManager()
+        ->getStorage('node')
+        ->loadMultiple($nids);
+      $script = '[';
+      foreach ($nodes as $store) {
+        $script .= "
+        {
+          type: 'FeatureCollection',
+          features: [
+            {
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: \"<?php echo $resul->field_latitude['und'][0]['value'];?>, <?php echo $resul->field_longitude['und'][0]['value'];?>\",
+              },
+              properties: {
+                title: \"<?php print $resul->field_display_title['und'][0]['value'];?>\",
+                address: \"<?php print $resul->gsl_addressfield['und'][0]['thoroughfare'];?>\",
+                locality: \" <?php print $resul->gsl_addressfield['und'][0]['locality'];?>, <?php print $resul->gsl_addressfield['und'][0]['administrative_area'];?> <span><?php print $resul->gsl_addressfield['und'][0]['postal_code'];?></span>\",
+                tel: \"<?php print $resul->field_store_phone['und'][0]['value'];?>\",
+                hrefad: \"<?php if (isset($node_week)) {
+                  echo
+                  $node_week->field_upload_the_pdf['und'][0]['filename'];
+                }?>\",
+                hrefDetails: \"<?php print drupal_get_path_alias('node/' . $resul->nid);?>\",
+              },
+              keywords: \"<?php if (isset($resul->field_department['und'][0])): foreach($resul->field_department['und'] as $term_id): $term = taxonomy_term_load($term_id['tid']);?> <?php echo $term->name;?>,<?php endforeach; ?><?php foreach($resul->field_specification['und'] as $term_id): $term = taxonomy_term_load($term_id['tid']);?> <?php echo $term->name;?>,<?php endforeach; ?><?php endif; ?><?php if (isset($resul->field_locations['und'][0])): foreach($resul->field_locations['und'] as $term_id): $term = taxonomy_term_load($term_id['tid']);?> <?php echo $term->name;?>,<?php endforeach; ?><?php endif; ?>\",
+            }"
+      }
+      $script .= ']';
   }
 }
 
