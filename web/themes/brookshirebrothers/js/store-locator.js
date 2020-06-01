@@ -1,5 +1,4 @@
 (function ($, Drupal, drupalSettings) {
-  "use strict";
   Drupal.behaviors.StoreLocator = {
     attach: function (context, settings) {
       let userZip = $.cookie('userZip');
@@ -11,12 +10,43 @@
         $("#moreOptionsSection").toggle();
       });
 
-      userZip = searchBox.val(); // user might have changed value
       let storeLocations;
       let locationCoordinates = drupalSettings.brookshireBrothers.storeLocator.locationCoordinates;
       let distanceSelect = $('#filter-distance');
       let overClass = 'over';
       let html;
+
+      // Simple JavaScript Templating
+      // John Resig - http://ejohn.org/ - MIT Licensed
+      let cache = {};
+      let tmpl = function tmpl(str, data) {
+        // Figure out if we're getting a template, or if we need to
+        // load the template - and be sure to cache the result.
+        let fn = !/\W/.test(str) ?
+          cache[str] = cache[str] ||
+            tmpl(document.getElementById(str).innerHTML) :
+          // Generate a reusable function that will serve as a template
+          // generator (and which will be cached).
+          new Function("obj",
+            "let p=[],print=function(){p.push.apply(p,arguments);};" +
+
+            // Introduce the data as local variables using with(){}
+            "with(obj){p.push('" +
+
+            // Convert the template into pure JavaScript
+            str
+              .replace(/[\r\t\n]/g, " ")
+              .split("<%").join("\t")
+              .replace(/((^|%>)[^\t]*)'/g, "$1\r")
+              .replace(/\t=(.*?)%>/g, "',$1,'")
+              .split("\t").join("');")
+              .split("%>").join("p.push('")
+              .split("\r").join("\\'")
+            + "');}return p.join('');");
+
+        // Provide some basic currying to the user
+        return data ? fn(data) : fn;
+      };
 
       /**
        * Gets GeoCoder object from zip code.
@@ -51,6 +81,7 @@
        * Function fired from Submit click.
        */
       function sendForm() {
+        userZip = searchBox.val(); // user might have changed value from cookie
         if (userZip.match(/^[0-9]{5}$/) == null) {
           searchBox.addClass("is-danger").focus().next('p').removeClass('is-hidden');
         } else {
@@ -96,7 +127,6 @@
 
       $("#searchSubmit").once("StoreLocator").on("click", function (e) {
         e.preventDefault();
-        console.log("Request submitted");
         sendForm();
       });
     }
