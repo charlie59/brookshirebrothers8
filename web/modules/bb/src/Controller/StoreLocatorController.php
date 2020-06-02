@@ -69,7 +69,8 @@ class StoreLocatorController extends ControllerBase {
   }
 
   /**
-   * Use Google API
+   * Uses Google API
+   * Works with Zip, State, and "City, State"
    *
    * @param $zip
    * @return mixed
@@ -107,6 +108,9 @@ class StoreLocatorController extends ControllerBase {
   public function locatorResults() {
 
     // var_dump($_GET);
+    // TODO: parse "Zip", which could be State, City, or Zip.
+
+
     $build = [];
     $terms = [];
     $items = [];

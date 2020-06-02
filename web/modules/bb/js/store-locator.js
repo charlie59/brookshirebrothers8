@@ -9,6 +9,7 @@
       $("#moreOptions").once("StoreLocator").click(function () {
         $("#moreOptionsSection").toggle();
       });
+      // TODO add check for valid value, State, City , Zip - so maybe just not empty.
     }
   }
 })(jQuery, Drupal, drupalSettings);
