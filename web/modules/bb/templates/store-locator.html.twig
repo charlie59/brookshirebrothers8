@@ -1,7 +1,6 @@
-{{ attach_library('bb/store-locator') }}
 <div{{ content_attributes.addClass('store-locator') }}>
 
-  <form id="store-locator" action="">
+  <form id="store-locator" action="/store-locator-results">
 
     <h1 class="page-title">Find a Store</h1>
 
@@ -37,7 +36,7 @@
 
     <div id="moreOptionsSection">
 
-      {% for department in departments %}
+      {% for department in items.departments %}
         <div class="field">
           <div class="control">
             <label class="checkbox">
@@ -49,7 +48,7 @@
       {% endfor %}
 
       <p>Include results with:</p>
-      {% for specification in specifications %}
+      {% for specification in items.specifications %}
         <div class="field">
           <div class="control">
             <label class="checkbox">
@@ -61,7 +60,7 @@
       {% endfor %}
 
       <p>Find locations of:</p>
-      {% for location in locations %}
+      {% for location in items.locations %}
         <div class="field">
           <div class="control">
             <label class="checkbox">

@@ -1,8 +1,5 @@
 <?php
 
-use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
-use Drupal\Component\Plugin\Exception\PluginNotFoundException;
-
 /**
  * Preprocessing for Blocks.
  *
@@ -17,84 +14,3 @@ function brookshirebrothers_preprocess_block(&$variables) {
     }
   }
 }
-
-/**
- * Preprocessing for html.
- *
- * @param $variables
- */
-function brookshirebrothers_preprocess_html(&$variables) {
-  $variables['#attached']['library'][] = 'brookshirebrothers/user-locator';
-}
-
-/**
- * Preprocessing for nodes.
- *
- * @param $variables
- * @throws InvalidPluginDefinitionException
- * @throws PluginNotFoundException
- */
-function brookshirebrothers_preprocess_node(&$variables) {
-  switch ($variables['node']->getType()) {
-    case 'result':
-      /* Preprocessing for Store Locator */
-      $terms = Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree('department');
-      $departments = [];
-      foreach ($terms as $term) {
-        $departments[] = [
-          'id' => $term->tid,
-          'name' => $term->name,
-        ];
-      }
-      $variables['departments']  = $departments;
-
-      $terms = Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree('specification');
-      $specifications = [];
-      foreach ($terms as $term) {
-        $specifications[] = [
-          'id' => $term->tid,
-          'name' => $term->name,
-        ];
-      }
-      $variables['specifications']  = $specifications;
-
-      $terms = Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree('locations');
-      $locations = [];
-      foreach ($terms as $term) {
-        $locations[] = [
-          'id' => $term->tid,
-          'name' => $term->name,
-        ];
-      }
-      $variables['locations']  = $locations;
-
-      $nids = Drupal::entityQuery('node')
-        ->condition('type', 'store_location')
-        ->execute();
-      $nodes = Drupal::entityTypeManager()
-        ->getStorage('node')
-        ->loadMultiple($nids);
-      $locationCoordinates = '[';
-      foreach ($nodes as $store) {
-        $locationCoordinates .= "
-        {
-          type: 'FeatureCollection',
-          features: [
-            {
-              type: 'Feature',
-              geometry: {
-                type: 'Point',
-                coordinates: \"" . $store->get('field_latitude')->value . ", " . $store->get('field_longitude')->value . "\",
-              },
-              properties: {
-                title: \"" . $store->label() . "\",
-              },
-              keywords: \"\",
-            }";
-      }
-      $locationCoordinates .= ']';
-      $variables['#attached']['drupalSettings']['brookshireBrothers']['storeLocator']['locationCoordinates'] = $locationCoordinates;
-
-  }
-}
-

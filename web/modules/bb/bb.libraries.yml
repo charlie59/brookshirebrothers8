@@ -1,0 +1,19 @@
+google-maps:
+  version: VERSION
+  remote: //maps.googleapis.com
+  license:
+    name: Google Maps Platform License Agreement
+    url: //cloud.google.com/maps-platform/terms/
+  js:
+    //maps.googleapis.com/maps/api/js?key=AIzaSyAQNRPaZd4ibswz8dB7gpOZyajfvtkRaAI&libraries=geometry: { type: external, attributes: { async: true } }
+
+store-locator:
+  version: VERSION
+  js:
+    js/store-locator.js: {}
+  dependencies:
+    - core/drupal
+    - core/jquery
+    - core/jquery.once
+    - core/jquery.cookie
+    - bb/google-maps
