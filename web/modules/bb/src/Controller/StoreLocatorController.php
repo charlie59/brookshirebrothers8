@@ -6,6 +6,7 @@ use Drupal;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
 use Drupal\Component\Plugin\Exception\PluginNotFoundException;
+use Drupal\node\Entity\Node;
 
 /**
  * Class StoreLocatorForm.
@@ -81,13 +82,35 @@ class StoreLocatorController extends ControllerBase {
   }
 
   /**
+   * @param $lat1
+   * @param $lon1
+   * @param $lat2
+   * @param $lon2
+   * @return float|int
+   */
+  private function distance($lat1, $lon1, $lat2, $lon2) {
+    if (($lat1 == $lat2) && ($lon1 == $lon2)) {
+      return 0;
+    }
+    else {
+      $theta = $lon1 - $lon2;
+      $dist = sin(deg2rad($lat1)) * sin(deg2rad($lat2)) +  cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * cos(deg2rad($theta));
+      $dist = acos($dist);
+      $dist = rad2deg($dist);
+      return $dist * 60 * 1.1515;
+    }
+  }
+
+  /**
    * Results template.
    */
   public function locatorResults() {
 
-    var_dump($_GET);
+    // var_dump($_GET);
     $build = [];
     $terms = [];
+    $items = [];
+    $stores = [];
 
     /* Get all Matching Store Locations */
     $query = Drupal::entityQuery('node');
@@ -181,26 +204,24 @@ class StoreLocatorController extends ControllerBase {
     }
 
     $nids = $query->execute();
-    // kint($query);
-    // var_dump($nids);
 
     // get LatLong from Zip
     $latLong = $this->getLatLong($_GET['zipCode']);
-    var_dump($latLong);
-    exit;
-    $nodes = [];
-    try {
-      $nodes = Drupal::entityTypeManager()
-        ->getStorage('node')
-        ->loadMultiple($nids);
-    } catch (InvalidPluginDefinitionException $e) {
-    } catch (PluginNotFoundException $e) {
-    }
 
-    // Render the 'store_locator' theme.
+    foreach ($nids as $nid) {
+      $node = Node::Load($nid);
+      $distance = $this->distance($latLong['lat'], $latLong['lng'], $node->get('field_latitude')->value, $node->get('field_longitude')->value);
+      $stores[] = [
+        'title' => $node->getTitle(),
+        'distance' => round($distance),
+        ];
+    }
+    $items['stores'] = $stores;
+
+    // Render the 'store_locator_results' theme.
     $build['store_locator_results'] = [
       '#theme' => 'store_locator_results',
-      '#items' => [],
+      '#items' => $items,
     ];
     return $build;
   }
