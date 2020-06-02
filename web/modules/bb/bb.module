@@ -15,6 +15,11 @@ function bb_theme($existing, $type, $theme, $path) {
         'items' => [],
       ],
     ],
+    'store_locator_results' => [
+      'variables' => [
+        'items' => [],
+      ],
+    ],
   ];
 }
 
@@ -23,6 +28,7 @@ function bb_theme($existing, $type, $theme, $path) {
  * @param $variables
  */
 function bb_preprocess_html(&$variables) {
+  /* Attach library to Store Locator. */
   $url = Url::fromRoute('<current>')->toString();
   if ($url == '/store-locator') {
     $variables['#attached']['library'][] = 'bb/store-locator';

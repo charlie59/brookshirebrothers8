@@ -5,3 +5,11 @@ bb.store_locator:
     _title: 'Find a Store'
   requirements:
     _permission: 'access content'
+
+bb.store_locator_results:
+  path: '/store-locator-results'
+  defaults:
+    _controller: '\Drupal\bb\Controller\StoreLocatorController::locatorResults'
+    _title: 'Your Stores'
+  requirements:
+    _permission: 'access content'

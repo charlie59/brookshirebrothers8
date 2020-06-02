@@ -4,6 +4,8 @@ namespace Drupal\bb\Controller;
 
 use Drupal;
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
+use Drupal\Component\Plugin\Exception\PluginNotFoundException;
 
 /**
  * Class StoreLocatorForm.
@@ -62,7 +64,144 @@ class StoreLocatorController extends ControllerBase {
       '#theme' => 'store_locator',
       '#items' => $items,
     ];
+    return $build;
+  }
 
+  /**
+   * Use Google API
+   *
+   * @param $zip
+   * @return mixed
+   */
+  private function getLatLong($zip){
+    $url = "https://maps.googleapis.com/maps/api/geocode/json?&key=AIzaSyAQNRPaZd4ibswz8dB7gpOZyajfvtkRaAI&address=" . $zip;
+    $result_string = file_get_contents($url);
+    $result = json_decode($result_string, true);
+    return $result['results'][0]['geometry']['location'];
+  }
+
+  /**
+   * Results template.
+   */
+  public function locatorResults() {
+
+    var_dump($_GET);
+    $build = [];
+    $terms = [];
+
+    /* Get all Matching Store Locations */
+    $query = Drupal::entityQuery('node');
+    $query->condition('type', 'store_location');
+
+    /* Main Locations taxonomy, field is named field_department */
+    try {
+      $terms = Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree('department');
+    } catch (InvalidPluginDefinitionException $e) {
+    } catch (PluginNotFoundException $e) {
+    }
+    $mainLocations = [];
+    if (isset($_GET['Brookshire_Brothers'])) {
+      $mainLocations[] = 1;
+    }
+    if (isset($_GET['Brookshire_Brothers_Express'])) {
+      $mainLocations[] = 2;
+    }
+    if (count($mainLocations) > 0 && count($mainLocations) != count($terms)) {
+      $query->condition('field_department', $mainLocations, "IN");
+    }
+
+    /* Departments taxonomy, field is named field_specification */
+    try {
+      $terms = Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree('specification');
+    } catch (InvalidPluginDefinitionException $e) {
+    } catch (PluginNotFoundException $e) {
+    }
+    $departments = [];
+    if (isset($_GET['Pharmacy'])) {
+      $departments[] = 3;
+    }
+    if (isset($_GET['Redbox'])) {
+      $departments[] = 592;
+    }
+    if (isset($_GET['Drive-thru_Pharmacy'])) {
+      $departments[] = 4;
+    }
+    if (isset($_GET['Flu_Shot'])) {
+      $departments[] = 5;
+    }
+    if (isset($_GET['Fuel'])) {
+      $departments[] = 6;
+    }
+    if (isset($_GET['Beverage_Depot_(21_and_over_to_purchase)'])) {
+      $departments[] = 7;
+    }
+    if (isset($_GET['Bakery'])) {
+      $departments[] = 8;
+    }
+    if (isset($_GET['Deli'])) {
+      $departments[] = 9;
+    }
+    if (isset($_GET['Floral'])) {
+      $departments[] = 10;
+    }
+    if (isset($_GET['Bissell_Rental'])) {
+      $departments[] = 588;
+    }
+    if (count($departments) > 0 && count($departments) != count($terms)) {
+      $query->condition('field_specification', $departments, "IN");
+    }
+
+    /* (Secondary) Locations taxonomy, field is named field_department */
+    try {
+      $terms = Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree('locations');
+    } catch (InvalidPluginDefinitionException $e) {
+    } catch (PluginNotFoundException $e) {
+    }
+    $locations = [];
+    if (isset($_GET['Cormie’s_Grocery'])) {
+      $locations[] = 12;
+    }
+    if (isset($_GET['David’s'])) {
+      $locations[] = 14;
+    }
+    if (isset($_GET['David’s_Express'])) {
+      $locations[] = 15;
+    }
+    if (isset($_GET['Pecan_Foods'])) {
+      $locations[] = 16;
+    }
+    if (isset($_GET['Polk_Pick-It-Up'])) {
+      $locations[] = 11;
+    }
+    if (isset($_GET['Tobacco_Barn'])) {
+      $locations[] = 13;
+    }
+    if (count($locations) > 0 && count($locations) != count($terms)) {
+      $query->condition('field_locations', $locations, "IN");
+    }
+
+    $nids = $query->execute();
+    // kint($query);
+    // var_dump($nids);
+
+    // get LatLong from Zip
+    $latLong = $this->getLatLong($_GET['zipCode']);
+    var_dump($latLong);
+    exit;
+    $nodes = [];
+    try {
+      $nodes = Drupal::entityTypeManager()
+        ->getStorage('node')
+        ->loadMultiple($nids);
+    } catch (InvalidPluginDefinitionException $e) {
+    } catch (PluginNotFoundException $e) {
+    }
+
+    // Render the 'store_locator' theme.
+    $build['store_locator_results'] = [
+      '#theme' => 'store_locator_results',
+      '#items' => [],
+    ];
     return $build;
   }
 
