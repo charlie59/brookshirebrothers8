@@ -10,6 +10,6 @@ bb.store_locator_results:
   path: '/store-locator-results'
   defaults:
     _controller: '\Drupal\bb\Controller\StoreLocatorController::locatorResults'
-    _title: 'Your Stores'
+    _title: 'Stores Near You'
   requirements:
     _permission: 'access content'

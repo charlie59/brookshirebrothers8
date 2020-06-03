@@ -1,16 +1,14 @@
 <div{{ content_attributes.addClass('store-locator-results') }}>
+
+  {% if items.total == 0 %}
+  <p>There are no stores within {{ items.distance }} miles of {{ items.zipCode }}. Please <a href="/store-locator">try your search again.</a>
+  </p>
+  {% else %}
+  <p>We found {{ items.total }} store{% if items.total > 1 %}s{% endif %} within {{ items.distance }} miles of {{ items.zipCode }} | <a href="/store-locator">Search Again</a>
+  </p>
+
+
   <div id="map">Map</div>
-
-  <div id="results">
-    {% for store in items.stores %}
-      <div class="store">
-        {{ store.title }}
-        {{ store.distance }}
-      </div>
-    {% endfor %}
-  </div>
-
-</div>
 
 <script>
   // Initialize and add the map
@@ -25,7 +23,27 @@
       });
     {% for store in items.stores %}
     let storePos_{{ store.nid }} = {lat: {{ store.lat }}, lng: {{ store.lng }}};
-    let marker_{{ store.nid }} = new google.maps.Marker({position: storePos_{{ store.nid }}, map: map});
+    let contentString_{{ store.nid }} = '<div id="content">'+
+      '<div id="siteNotice">'+
+      '</div>'+
+      '<div id="bodyContent">'+
+      '<p><b>{{ store.title }}</b></p>'+
+      '</div>'+
+      '</div>';
+
+    let infoWindow_{{ store.nid }} = new google.maps.InfoWindow({
+      content: contentString_{{ store.nid }}
+    });
+
+    let marker_{{ store.nid }} = new google.maps.Marker({
+      position: storePos_{{ store.nid }},
+      label: '{{ loop.index }}',
+      map: map
+    });
+
+    marker_{{ store.nid }}.addListener('click', function() {
+      infoWindow_{{ store.nid }}.open(map, marker_{{ store.nid }});
+    });
     {% endfor %}
   }
 </script>
@@ -34,4 +52,18 @@
     * The key parameter will contain your own API key (which is not needed for this tutorial)
     * The callback parameter executes the initMap() function
     -->
-<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAQNRPaZd4ibswz8dB7gpOZyajfvtkRaAI&callback=initMap"></script>
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAQNRPaZd4ibswz8dB7gpOZyajfvtkRaAI&callback=initMap"></script>
+
+    <div id="results">
+      {% for store in items.stores %}
+        <div class="store">
+          {{ store.title }}
+          {{ store.distance }}
+        </div>
+      {% endfor %}
+    </div>
+
+{% endif %}
+
+</div>

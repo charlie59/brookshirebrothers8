@@ -135,7 +135,7 @@ class StoreLocatorController extends ControllerBase {
     if (isset($_GET['Brookshire_Brothers_Express'])) {
       $mainLocations[] = 2;
     }
-    if (count($mainLocations) > 0 && count($mainLocations) != count($terms)) {
+    if (count($mainLocations) > 0 && count($mainLocations) < count($terms)) {
       $query->condition('field_department', $mainLocations, "IN");
     }
 
@@ -176,7 +176,7 @@ class StoreLocatorController extends ControllerBase {
     if (isset($_GET['Bissell_Rental'])) {
       $departments[] = 588;
     }
-    if (count($departments) > 0 && count($departments) != count($terms)) {
+    if (count($departments) > 0 && count($departments) < count($terms)) {
       $query->condition('field_specification', $departments, "IN");
     }
 
@@ -205,7 +205,7 @@ class StoreLocatorController extends ControllerBase {
     if (isset($_GET['Tobacco_Barn'])) {
       $locations[] = 13;
     }
-    if (count($locations) > 0 && count($locations) != count($terms)) {
+    if (count($locations) > 0 && count($locations) < count($terms)) {
       $query->condition('field_locations', $locations, "IN");
     }
 
@@ -234,6 +234,9 @@ class StoreLocatorController extends ControllerBase {
       }
     }
     $items['stores'] = $stores;
+    $items['zipCode'] = $zipCode;
+    $items['distance'] = (int) $_GET['filterDistance'];
+    $items['total'] = count($stores);
 
     // Render the 'store_locator_results' theme.
     $build['store_locator_results'] = [
