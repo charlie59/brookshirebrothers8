@@ -107,9 +107,19 @@ class StoreLocatorController extends ControllerBase {
    */
   public function locatorResults() {
 
-    // var_dump($_GET);
-    // TODO: parse "Zip", which could be State, City, or Zip.
-
+    /* Check "Zip", which could be State, City, or Zip. */
+    $ok = '';
+    $zipCode = trim($_GET['zipCode']);
+    $states = ['Texas', 'TX', 'Louisiana', 'LA'];
+    if (in_array($zipCode, $states)) {
+      $ok = 1;
+    }
+    if (preg_match("/^[\d]{5}/", $zipCode)) {
+      $ok = 1;
+    }
+    if ($ok == 0) {
+      return $this->redirect('bb.store_locator');
+    }
 
     $build = [];
     $terms = [];
@@ -210,15 +220,17 @@ class StoreLocatorController extends ControllerBase {
     $nids = $query->execute();
 
     // get LatLong from Zip
-    $latLong = $this->getLatLong($_GET['zipCode']);
+    $latLong = $this->getLatLong($zipCode);
 
     foreach ($nids as $nid) {
       $node = Node::Load($nid);
       $distance = $this->distance($latLong['lat'], $latLong['lng'], $node->get('field_latitude')->value, $node->get('field_longitude')->value);
-      $stores[] = [
-        'title' => $node->getTitle(),
-        'distance' => round($distance),
+      if ($distance <= (int) $_GET['filterDistance']) {
+        $stores[] = [
+          'title' => $node->getTitle(),
+          'distance' => round($distance),
         ];
+      }
     }
     $items['stores'] = $stores;
 
