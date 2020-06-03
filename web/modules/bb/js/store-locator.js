@@ -9,7 +9,12 @@
       $("#moreOptions").once("StoreLocator").click(function () {
         $("#moreOptionsSection").toggle();
       });
-      // TODO add check for valid value, State, City , Zip - so maybe just not empty.
+      $("#searchSubmit").on('click', function(e) {
+        if (searchBox.val() === '') {
+          e.preventDefault();
+          $('.help').removeClass('is-hidden');
+        }
+      })
     }
   }
 })(jQuery, Drupal, drupalSettings);
