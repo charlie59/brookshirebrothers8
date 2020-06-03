@@ -1,3 +1,5 @@
+# Key added directly here
+# TODO how to add key from settings?
 google-maps:
   version: VERSION
   remote: //maps.googleapis.com
@@ -17,3 +19,17 @@ store-locator:
     - core/jquery.once
     - core/jquery.cookie
     - bb/google-maps
+
+# no google-maps because the script is called directly in store-locator-results.html.twig
+store-locator-results:
+  version: VERSION
+  css:
+    theme:
+      css/store-locator-results.css: { weight: 1 }
+  js:
+    js/store-locator-results.js: {}
+  dependencies:
+    - core/drupal
+    - core/jquery
+    - core/jquery.once
+    - core/jquery.cookie

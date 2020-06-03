@@ -33,4 +33,7 @@ function bb_preprocess_html(&$variables) {
   if ($url == '/store-locator') {
     $variables['#attached']['library'][] = 'bb/store-locator';
   }
+  if ($url == '/store-locator-results') {
+    $variables['#attached']['library'][] = 'bb/store-locator-results';
+  }
 }

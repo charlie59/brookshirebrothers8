@@ -1,0 +1,9 @@
+.path-store-locator-results .layout-content {
+  display: block;
+  margin: 0;
+}
+
+#map {
+  height: 40vh;
+  width: 100%;
+}

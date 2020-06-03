@@ -1,6 +1,37 @@
-{% for store in items.stores %}
-  <div class="store">
-    {{ store.title }}
-    {{ store.distance }}
+<div{{ content_attributes.addClass('store-locator-results') }}>
+  <div id="map">Map</div>
+
+  <div id="results">
+    {% for store in items.stores %}
+      <div class="store">
+        {{ store.title }}
+        {{ store.distance }}
+      </div>
+    {% endfor %}
   </div>
-{% endfor %}
+
+</div>
+
+<script>
+  // Initialize and add the map
+  function initMap() {
+    let elCentro = {lat: {{ items.latLong.lat }}, lng: {{ items.latLong.lng }}};
+    let map = new google.maps.Map(
+      document.getElementById('map'), {
+        zoom: 9,
+        center: elCentro,
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        imageDefaultUI: true
+      });
+    {% for store in items.stores %}
+    let storePos_{{ store.nid }} = {lat: {{ store.lat }}, lng: {{ store.lng }}};
+    let marker_{{ store.nid }} = new google.maps.Marker({position: storePos_{{ store.nid }}, map: map});
+    {% endfor %}
+  }
+</script>
+<!--Load the API from the specified URL
+    * The async attribute allows the browser to render the page while the API loads
+    * The key parameter will contain your own API key (which is not needed for this tutorial)
+    * The callback parameter executes the initMap() function
+    -->
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAQNRPaZd4ibswz8dB7gpOZyajfvtkRaAI&callback=initMap"></script>

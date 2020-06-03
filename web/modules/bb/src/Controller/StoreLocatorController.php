@@ -107,7 +107,7 @@ class StoreLocatorController extends ControllerBase {
    */
   public function locatorResults() {
 
-    /* Check "Zip", which could be "City, State" or Zip. */
+    /* Check "zipCode", which could be "City, State" or Zip. */
     $zipCode = trim($_GET['zipCode']);
     if (empty($zipCode)) {
       return $this->redirect('bb.store_locator');
@@ -213,14 +213,23 @@ class StoreLocatorController extends ControllerBase {
 
     // get LatLong from Zip
     $latLong = $this->getLatLong($zipCode);
+    $items['latLong'] = [
+      'lat' => $latLong['lat'],
+      'lng' => $latLong['lng'],
+    ];
 
     foreach ($nids as $nid) {
       $node = Node::Load($nid);
-      $distance = $this->distance($latLong['lat'], $latLong['lng'], $node->get('field_latitude')->value, $node->get('field_longitude')->value);
+      $lat = $node->get('field_latitude')->value;
+      $lng = $node->get('field_longitude')->value;
+      $distance = $this->distance($latLong['lat'], $latLong['lng'], $lat, $lng);
       if ($distance <= (int) $_GET['filterDistance']) {
         $stores[] = [
+          'nid' => $nid,
           'title' => $node->getTitle(),
           'distance' => round($distance),
+          'lat' => $lat,
+          'lng' => $lng,
         ];
       }
     }
