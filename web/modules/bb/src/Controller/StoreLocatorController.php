@@ -108,16 +108,8 @@ class StoreLocatorController extends ControllerBase {
   public function locatorResults() {
 
     /* Check "Zip", which could be State, City, or Zip. */
-    $ok = '';
     $zipCode = trim($_GET['zipCode']);
-    $states = ['Texas', 'TX', 'Louisiana', 'LA'];
-    if (in_array($zipCode, $states)) {
-      $ok = 1;
-    }
-    if (preg_match("/^[\d]{5}/", $zipCode)) {
-      $ok = 1;
-    }
-    if ($ok == 0) {
+    if (empty($zipCode)) {
       return $this->redirect('bb.store_locator');
     }
 
