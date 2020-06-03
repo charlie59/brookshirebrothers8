@@ -211,7 +211,7 @@ class StoreLocatorController extends ControllerBase {
 
     $nids = $query->execute();
 
-    // get LatLong from Zip
+    // get LatLong from zipcode
     $latLong = $this->getLatLong($zipCode);
     $items['latLong'] = [
       'lat' => $latLong['lat'],
@@ -220,6 +220,7 @@ class StoreLocatorController extends ControllerBase {
 
     foreach ($nids as $nid) {
       $node = Node::Load($nid);
+      // Use stored lat and lng to get distance in miles from search zipCode
       $lat = $node->get('field_latitude')->value;
       $lng = $node->get('field_longitude')->value;
       $distance = $this->distance($latLong['lat'], $latLong['lng'], $lat, $lng);
@@ -227,7 +228,6 @@ class StoreLocatorController extends ControllerBase {
         $stores[] = [
           'nid' => $nid,
           'title' => $node->getTitle(),
-          'distance' => round($distance),
           'lat' => $lat,
           'lng' => $lng,
         ];

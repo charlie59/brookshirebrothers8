@@ -1,69 +1,72 @@
 <div{{ content_attributes.addClass('store-locator-results') }}>
 
   {% if items.total == 0 %}
-  <p>There are no stores within {{ items.distance }} miles of {{ items.zipCode }}. Please <a href="/store-locator">try your search again.</a>
-  </p>
+    <p>There are no stores within {{ items.distance }} miles of {{ items.zipCode }}. Please <a href="/store-locator">try
+        your search again.</a>
+    </p>
   {% else %}
-  <p>We found {{ items.total }} store{% if items.total > 1 %}s{% endif %} within {{ items.distance }} miles of {{ items.zipCode }} | <a href="/store-locator">Search Again</a>
-  </p>
+    <p>We found {{ items.total }} store{% if items.total > 1 %}s{% endif %} within {{ items.distance }} miles
+      of {{ items.zipCode }} | <a href="/store-locator">Search Again</a>
+    </p>
 
 
-  <div id="map">Map</div>
+    <div id="map">Map</div>
 
-<script>
-  // Initialize and add the map
-  function initMap() {
-    let elCentro = {lat: {{ items.latLong.lat }}, lng: {{ items.latLong.lng }}};
-    let map = new google.maps.Map(
-      document.getElementById('map'), {
-        zoom: 9,
-        center: elCentro,
-        mapTypeId: google.maps.MapTypeId.ROADMAP,
-        imageDefaultUI: true
-      });
-    {% for store in items.stores %}
-    let storePos_{{ store.nid }} = {lat: {{ store.lat }}, lng: {{ store.lng }}};
-    let contentString_{{ store.nid }} = '<div id="content">'+
-      '<div id="siteNotice">'+
-      '</div>'+
-      '<div id="bodyContent">'+
-      '<p><b>{{ store.title }}</b></p>'+
-      '</div>'+
-      '</div>';
+    <script>
+      // Initialize and add the map
+      function initMap() {
 
-    let infoWindow_{{ store.nid }} = new google.maps.InfoWindow({
-      content: contentString_{{ store.nid }}
-    });
+        let elCentro = {lat: {{ items.latLong.lat }}, lng: {{ items.latLong.lng }}};
+        let infoWindow = new google.maps.InfoWindow();
+        let map = new google.maps.Map(
+          document.getElementById('map'), {
+            zoom: 18,
+            center: elCentro,
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
+            imageDefaultUI: true
+          });
+        let request = {
+          query: '86MW+86 Lufkin, Texas',
+          fields: ['name', 'geometry'],
+        };
 
-    let marker_{{ store.nid }} = new google.maps.Marker({
-      position: storePos_{{ store.nid }},
-      label: '{{ loop.index }}',
-      map: map
-    });
+        let service = new google.maps.places.PlacesService(map);
 
-    marker_{{ store.nid }}.addListener('click', function() {
-      infoWindow_{{ store.nid }}.open(map, marker_{{ store.nid }});
-    });
-    {% endfor %}
-  }
-</script>
-<!--Load the API from the specified URL
-    * The async attribute allows the browser to render the page while the API loads
-    * The key parameter will contain your own API key (which is not needed for this tutorial)
-    * The callback parameter executes the initMap() function
-    -->
-<script async defer
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAQNRPaZd4ibswz8dB7gpOZyajfvtkRaAI&callback=initMap"></script>
+        service.findPlaceFromQuery(request, function (results, status) {
+          if (status === google.maps.places.PlacesServiceStatus.OK) {
+            for (let i = 0; i < results.length; i++) {
+              createMarker(results[i]);
+            }
+            map.setCenter(results[0].geometry.location);
+          }
+        });
+
+        function createMarker(place) {
+          let marker = new google.maps.Marker({
+            map: map,
+            position: place.geometry.location,
+          });
+
+          google.maps.event.addListener(marker, 'click', function() {
+            infoWindow.setContent('Brookshire Brothers');
+            infoWindow.open(map, this);
+          });
+        }
+
+      }
+    </script>
+    <script async defer
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAQNRPaZd4ibswz8dB7gpOZyajfvtkRaAI&libraries=places&callback=initMap"></script>
 
     <div id="results">
       {% for store in items.stores %}
         <div class="store">
-          {{ store.title }}
-          {{ store.distance }}
+          <h1>{{ loop.index }}</h1>
+          {{ drupal_entity('node', store.nid, 'teaser') }}
         </div>
       {% endfor %}
     </div>
 
-{% endif %}
+  {% endif %}
 
 </div>

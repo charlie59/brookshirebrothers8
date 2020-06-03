@@ -15,6 +15,7 @@
         }
     ],
     "require": {
+        "ext-json": "*",
         "composer/installers": "^1.2",
         "drupal/address": "^1.8",
         "drupal/addtoany": "^1.12",
@@ -35,8 +36,8 @@
         "drupal/scheduler": "^1.1",
         "drupal/search_exclude_nid": "^1.2",
         "drupal/superfish": "^1.3",
-        "drush/drush": "^10.2",
-        "ext-json": "*"
+        "drupal/twig_tweak": "^2.6",
+        "drush/drush": "^10.2"
     },
     "conflict": {
         "drupal/drupal": "*"
