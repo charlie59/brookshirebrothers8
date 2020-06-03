@@ -13,27 +13,18 @@ function bb_theme($existing, $type, $theme, $path) {
     'store_locator' => [
       'variables' => [
         'items' => [],
+        '#attached' => [
+          'library' => ['bb/store-locator']
+        ],
       ],
     ],
     'store_locator_results' => [
       'variables' => [
         'items' => [],
+        '#attached' => [
+          'library' => ['bb/store-locator-results']
+        ],
       ],
     ],
   ];
-}
-
-/**
- * Implements hook_preprocess_html().
- * @param $variables
- */
-function bb_preprocess_html(&$variables) {
-  /* Attach library to Store Locator. */
-  $url = Url::fromRoute('<current>')->toString();
-  if ($url == '/store-locator') {
-    $variables['#attached']['library'][] = 'bb/store-locator';
-  }
-  if ($url == '/store-locator-results') {
-    $variables['#attached']['library'][] = 'bb/store-locator-results';
-  }
 }
