@@ -285,12 +285,10 @@ class StoreLocatorController extends ControllerBase {
   }
 
   /**
-   * Retrieve field values from Salesforce
-   * @return object
+   * Retrieve field values from Salesforce.
    */
   private function getSfStores() {
-    $ret = $this->mySforceConnection->retrieve($this->fieldList, 'Account', $this->ids);
-    $this->sfStores = (object) $ret;
+    $this->sfStores = $this->mySforceConnection->retrieve($this->fieldList, 'Account', $this->ids);;
   }
 
   /**
@@ -319,7 +317,10 @@ class StoreLocatorController extends ControllerBase {
       foreach ($this->sfStores as $object) {
         $store_number = $object->fields->Store_Number__c;
         if (!empty($store_number)) {
-          echo $store_number . '<br>';
+          $query = Drupal::entityQuery('node')
+            ->condition('type', 'store_location')
+            ->condition('field_number_store', $store_number);
+          $node = $query->execute();
         }
       }
     }
