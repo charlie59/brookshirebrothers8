@@ -1,0 +1,4 @@
+services:
+  bb.service:
+    class: \Drupal\my_module\MyModuleService
+    arguments: ['@messenger']

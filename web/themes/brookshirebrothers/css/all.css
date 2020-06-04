@@ -4688,7 +4688,7 @@ body {
 .layout-content {
   display: grid;
   grid-template-columns: 20% auto;
-  margin: 0 1rem 0 0;
+  margin: 0;
   column-gap: 1rem;
 }
 
@@ -4697,6 +4697,11 @@ body {
 }
 .block:not(last-child) {
   margin-bottom: 0;
+}
+
+.messages--error {
+  box-shadow: unset !important;
+  text-align: center;
 }
 
 body {
@@ -4858,6 +4863,11 @@ ul.menu {
 
 .region-main-menu {
   padding: 1rem 0 0;
+}
+
+.region-content-top {
+  grid-column: 1/3;
+  padding: 0;
 }
 
 .region-footer {

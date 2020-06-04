@@ -1,0 +1,123 @@
+<h1 id="integratinginmardigitaloffersappintoyoursite">Integrating Inmar Digital Offers App Into Your Site</h1>
+
+<h2 id="planningforthenewdigitaloffersapp">Planning for the New Digital Offers App</h2>
+
+<p>The Inmar Digital Coupons app is a "one-page" javascript app that can be easily integrated into your retailer website as
+needed.  Before you start, you will need to communicate a few pieces of information to either your Inmar Account Manager or your Inmar Implementation Specialist.</p>
+
+<ul>
+<li>The primary colors to be used on the site - Brand color, highlight color, lowlight colors</li>
+<li>The type of primary key used to identify users - LoyaltyCard Number (and length), or Phone number</li>
+<li>If an Account Management or Single Sign On system is in place and going to be used to authenticate and identify users, then we need the URL's of the Register, Login, and Logout functions.</li>
+</ul>
+
+<h2 id="obtainingandinstallingdeploymentpackage">Obtaining and Installing Deployment Package</h2>
+
+<p>You account Manager and/or Implementation Specialist will be responsible for getting a deployment package created and sent to you.   The package is about 2 MB in size and may not be able to be sent to you via email.   If so, they will set up an alternate system, such as using BaseCamp or some other collaboration service to share files with you.</p>
+
+<p>The package is a zip file, and the contents should be placed into your webserver or webhost as appropriate (see next section).  The format of the folders and files are:</p>
+
+<pre><code>retailerName
+  /css
+  /fonts
+  /images
+  /js
+  index.html
+</code></pre>
+
+<p>The index.html file is a sample page that will load and run the Digital Coupons page if executed in your browser. You can refer to this page as an example of how to specify and execute the app when you integrate the Digital Coupons app into your website.  The examples referred to below are copied from this index.html file.</p>
+
+<h2 id="integratingthedigitalcouponappintoyoursite">Integrating the Digital Coupon App Into Your Site</h2>
+
+<p>First, you'll need to upload the following assets to your webserver/webhost.  We suggest that you keep the Inmar Digital Coupon App assets in a separate folder from your existing site content to make it easier to install subsequent maintenance and new version releases:</p>
+
+<pre><code>\images
+\css
+\fonts
+\js
+</code></pre>
+
+<p><em>Note: Upload your fonts and images first, as the paths to these assets may need to be updated within the CSS based on where they're uploaded.   The CSS for the app is set up to reference images and fonts relatively, so we HIGHLY recommend that you keep the folder/directory structure intact to minimize customizations for not just this initial install but for all maintenance and feature releases of the app that will done in the future.</em></p>
+
+<p>Once the assets are in place, you then will copy the markup necessary to load the application within a page on your existing site, which we assume will be a new page in the normal format as other pages in your site.</p>
+
+<p>The stylesheet link and the modernizr script are loaded in the <head> section, if possible.  You may need to adjust the path to require.js, depending on how and where you loaded the Digital Coupons app's asset files into your webserver/webhost.</p>
+
+<pre><code>&lt;!--### Include the stylesheet and modernizr in the page HEAD --&gt;
+&lt;link rel="stylesheet" href="css/app.css"&gt;
+&lt;script src="js/vendor/modernizr.js"&gt;&lt;/script&gt;
+</code></pre>
+
+<p>Then our target markup should be wrapped in a "container", that container should have the id: inWrap. The #inWrap id is our <em>namespace</em> for all our styles, and you should put that on the <body> element to minimize CSS Style collisions.</p>
+
+<pre><code>&lt;body id="inWrap"&gt; &lt;!--### the id="inWrap" is our namespace, place this ID on the container element --&gt;
+</code></pre>
+
+<p>Then add the following lines in the body of the page.  This is base markup for the app, where the content will appear.</p>
+
+<pre><code>&lt;!--### This is our target markup, place this within your page --&gt;
+&lt;div id="inmContent" class="content"&gt;&lt;/div&gt;
+
+&lt;div id="modal" class="modal fade" role="dialog"&gt;
+  &lt;div class="modal-dialog"&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;!--### End target markup --&gt;
+</code></pre>
+
+<p>Lastly, just before the closing </body> tag, the jQuery and RequireJS scripts should be included. You may need to adjust the path to require.js as well as the data-main path to the app.js file.</p>
+
+<pre><code>&lt;!--### Our scripts, place these as close to the &lt;/body&gt; tag as possible --&gt;
+&lt;script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"&gt;&lt;/script&gt;
+&lt;script data-main="js/app" src="js/vendor/require.js"&gt;&lt;/script&gt;
+&lt;!--### ^ this data-main attribute points to our app.js file relative to the page --&gt;
+</code></pre>
+
+<h2 id="resolvingcssstylecollisions">Resolving CSS Style Collisions</h2>
+
+<p>Once you get the Digital Coupons application up and running in your web site, it is common to have some collisions in CSS styles defined for your website page and the CSS defined in the new Digital Coupons app that is now embedded in your website page. Some collisions may have no material effect, but many times they alter the rendering of the Digital Coupon content-box in an undesirable way.</p>
+
+<p>While many techniques have been used to minimize these potential collisions (such as namespacing our CSS), there are literally hundreds of style attributes that your site may utilize that are carried down into the usage of styles on element types in the Digital Coupons app CSS.</p>
+
+<p>These styles can be resolved on either side of the conflict, by altering your own CSS usage, or we can make changes to our CSS to override style conflicts in the Digital Coupons app. In order for us to make the necessary changes we will need access to view the site in an integration or development environment.</p>
+
+<h2 id="integratingintoyouaccountmanagementorsinglesignonssosystemoptional">Integrating Into You Account Management or Single Sign On (SSO) system (optional)</h2>
+
+<p>This section only applies if you are going to take the responsibility for account management and integrate it into an existing Account Management or Single Sign On (SSO) system.</p>
+
+<p>The SSO interface for the Inmar Digital App is such that the app will invoke the URL's of functions in your SSO system to handle certain functions or actions that would normally be handled by the app itself.   Because your app has been built and configured with the SSO interface turned on, along with the URL's you provided previously, these URL's will be invoked instead. (Note: Often Login and Register functions are handled by the same URL)</p>
+
+<p>These functions and the actions they will need to take are listed in the following functions:</p>
+
+<h1 id="register">Register</h1>
+
+<p>If a user is not registered for the Digital Coupons app already, then the user will need to be registered with our Inmar platform, using our ICE Platform API with the /user/register API function (covered in separate ICE documentation).</p>
+
+<p>That ICE /user/register API call will return a user token that will need to be be formatted into the following HTTP Get request to perform a actual login (authentication) to the app:</p>
+
+<p><path-to-app-page>/#login/<returned-token></p>
+
+<p>The app will handle this GET request and perform the necessary initialization and start the app and display the Coupon page for the User Account.</p>
+
+<p>You will need to handle error processing if this account is a duplicate on the ICE /user/register API call.</p>
+
+<h1 id="logon">Logon</h1>
+
+<p>After your SSO system completes it's authentication process, you will need to perform the following.</p>
+
+<p>First, perform a ICE Login call that will obtain a login token on behalf of that user, using the our ICE Platform API with the /user/login function (covered in separate ICE documentation).  Please note that this API requires the use "masterSecretKey" previously given to you, and this call must be done on the server side, so as to NOT potentially expose this "masterSecretKey" to the outside world via browser asset inspection.</p>
+
+<p>That ICE /user/login API call will return a user token that you will need to format into the following HTTP Get request to perform a actual login to the app:</p>
+
+<p><path-to-app-page>/#login/<returned-token></p>
+
+<p>The app will handle this GET request and perform the necessary initialization and start the app and display the Coupon page for the User Account.</p>
+
+<p>You will need to handle error processing if the user account is not found for the ICE /user/login API call.</p>
+
+<h1 id="logout">Logout</h1>
+
+<p>If the you would like to "logoff" the user (which is not needed as a users authentication can live near forever), their Logout URL would need to invoke the following B2C HTTP Get called:</p>
+
+<p><path-to-app-page>/#logout</p>
+
+<p>This path simply removes the user's token from the browser's localStorage and redirects to the Logout path provided. This can be managed by the retailer independently, if so desired.</p>

@@ -23,7 +23,7 @@ body {
 .layout-content {
   display: grid;
   grid-template-columns: 20% auto;
-  margin: 0 1rem 0 0;
+  margin: 0;
   column-gap: 1rem;
 }
 
@@ -32,5 +32,10 @@ body {
   &:not(last-child) {
     margin-bottom: 0;
   }
+}
+
+.messages--error {
+  box-shadow: unset!important;
+  text-align: center;
 }
 

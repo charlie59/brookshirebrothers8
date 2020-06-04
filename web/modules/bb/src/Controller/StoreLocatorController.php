@@ -7,6 +7,8 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
 use Drupal\Component\Plugin\Exception\PluginNotFoundException;
 use Drupal\node\Entity\Node;
+use Exception;
+use SforcePartnerClient;
 
 /**
  * Class StoreLocatorForm.
@@ -14,6 +16,31 @@ use Drupal\node\Entity\Node;
  * @package Drupal\bb\Form
  */
 class StoreLocatorController extends ControllerBase {
+
+  /**
+   * Var Setup.
+   *
+   */
+  protected $soapDir;
+  protected $soapUser;
+  protected $soapPass;
+  protected $mySforceConnection;
+  protected $ids;
+  protected $fieldList;
+  protected $sfStores;
+
+
+  /**
+   * StoreLocatorController constructor.
+   */
+  public function __construct() {
+    $this->messenger = Drupal::messenger();
+    $this->soapDir = __DIR__ . "/../../../../libraries/salesforce/soapclient";
+    $this->soapUser = "drupalintegration@brookshirebros.com";
+    $this->soapPass = "Br00kshire2017uZRlliWUmOl8Mkm9y8AGX7PD";
+    $this->ids = [];
+    $this->fieldList = "Store_Number__c,Name,BillingStreet,BillingCity,BillingState,BillingPostalCode,Phone,Store_Director_Formula__c,Store_Hours__c,Beverage_Depot_Location__c,Has_Bakery__c,Has_Deli__c,Has_Weekly_Ad__c,Has_Floral__c,Redbox__c,Store_Location__Latitude__s,Store_Location__Longitude__s,BB_Pharmacy__c,Pharmacy_Number__c,Pharmacist_Text__c,Pharmacy_State_Board_Number__c,Pharmacy_Phone__c,Pharmacy_Fax__c,Pharmacy_Hours__c,Has_Pharmacy_Drive_Thru__c,Offers_Flu_Shot__c,Has_Fuel__c,Fuel_Brand__c,BB_Tobacco_Barn__c,Tobacco_Barn_Number__c,Tobacco_Barn_Manager_Text__c,Tobacco_Barn_Hours__c,Has_Subway__c,Subway_Phone__c,Subway_Director__c,Has_Washateria__c,Washateria_Phone__c,Washateria_Director__c,Has_Car_Wash__c,Car_Wash_Phone__c,Car_Wash_Director__c,Has_Mr_Payroll__c,Mr_Payroll_Phone__c,BBros_Text_Signup__c,TBarn_Text_signup__c,WeeklyAd__c,Bissell_Location__c";
+  }
 
   /**
    * @return array
@@ -75,7 +102,7 @@ class StoreLocatorController extends ControllerBase {
    * @param $zip
    * @return mixed
    */
-  private function getLatLong($zip){
+  private function getLatLong($zip) {
     $url = "https://maps.googleapis.com/maps/api/geocode/json?&key=AIzaSyAQNRPaZd4ibswz8dB7gpOZyajfvtkRaAI&address=" . $zip;
     $result_string = file_get_contents($url);
     $result = json_decode($result_string, true);
@@ -92,10 +119,9 @@ class StoreLocatorController extends ControllerBase {
   private function distance($lat1, $lon1, $lat2, $lon2) {
     if (($lat1 == $lat2) && ($lon1 == $lon2)) {
       return 0;
-    }
-    else {
+    } else {
       $theta = $lon1 - $lon2;
-      $dist = sin(deg2rad($lat1)) * sin(deg2rad($lat2)) +  cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * cos(deg2rad($theta));
+      $dist = sin(deg2rad($lat1)) * sin(deg2rad($lat2)) + cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * cos(deg2rad($theta));
       $dist = acos($dist);
       $dist = rad2deg($dist);
       return $dist * 60 * 1.1515;
@@ -108,10 +134,11 @@ class StoreLocatorController extends ControllerBase {
   public function locatorResults() {
 
     /* Check "zipCode", which could be "City, State" or Zip. */
-    $zipCode = trim($_GET['zipCode']);
-    if (empty($zipCode)) {
+    if (!isset($_GET['zipCode']) || empty($_GET['zipCode'])) {
+      $this->messenger->addMessage('No zip code or city entered!', 'error');
       return $this->redirect('bb.store_locator');
     }
+    $zipCode = trim($_GET['zipCode']);
 
     $build = [];
     $terms = [];
@@ -224,7 +251,7 @@ class StoreLocatorController extends ControllerBase {
       $lat = $node->get('field_latitude')->value;
       $lng = $node->get('field_longitude')->value;
       $distance = $this->distance($latLong['lat'], $latLong['lng'], $lat, $lng);
-      if ($distance <= (int) $_GET['filterDistance']) {
+      if ($distance <= (int)$_GET['filterDistance']) {
         $stores[] = [
           'nid' => $nid,
           'title' => $node->getTitle(),
@@ -235,7 +262,7 @@ class StoreLocatorController extends ControllerBase {
     }
     $items['stores'] = $stores;
     $items['zipCode'] = $zipCode;
-    $items['distance'] = (int) $_GET['filterDistance'];
+    $items['distance'] = (int)$_GET['filterDistance'];
     $items['total'] = count($stores);
 
     // Render the 'store_locator_results' theme.
@@ -244,6 +271,63 @@ class StoreLocatorController extends ControllerBase {
       '#items' => $items,
     ];
     return $build;
+  }
+
+  /**
+   * Retrieve ids of Salesforce Account records.
+   */
+  private function getIds() {
+    $query = "Select Id from Account Where Type = 'BB Store'";
+    $response = $this->mySforceConnection->query($query);
+    foreach ($response->records as $object) {
+      $this->ids[] = $object->Id[0];
+    }
+  }
+
+  /**
+   * Retrieve field values from Salesforce
+   * @return object
+   */
+  private function getSfStores() {
+    $ret = $this->mySforceConnection->retrieve($this->fieldList, 'Account', $this->ids);
+    $this->sfStores = (object) $ret;
+  }
+
+  /**
+   * Connect to Salesforce and update Store nodes.
+   * TODO - there's probably a more Drupal way of doing this.
+   */
+  function updateStores() {
+
+    require_once ($this->soapDir.'/SforcePartnerClient.php');
+    require_once ($this->soapDir.'/SforceHeaderOptions.php');
+    require_once ($this->soapDir.'/SforceBaseClient.php');
+
+    try {
+      $this->mySforceConnection = new SforcePartnerClient();
+      $this->mySforceConnection->createConnection($this->soapDir.'/partner.wsdl.xml');
+      $this->mySforceConnection->login($this->soapUser, $this->soapPass);
+    } catch (Exception $e) {
+      echo $this->mySforceConnection->getLastRequest();
+      echo $e->faultstring;
+    }
+
+    $this->getIds();
+    $this->getSfstores();
+
+    if (count($this->sfStores) > 0) {
+      foreach ($this->sfStores as $object) {
+        $store_number = $object->fields->Store_Number__c;
+        if (!empty($store_number)) {
+          echo $store_number . '<br>';
+        }
+      }
+    }
+
+    return [
+      '#markup' => 'Update completed',
+    ];
+
   }
 
 }
