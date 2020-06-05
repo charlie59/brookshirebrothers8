@@ -39,7 +39,7 @@ class StoreLocatorController extends ControllerBase {
     $this->soapUser = "drupalintegration@brookshirebros.com";
     $this->soapPass = "Br00kshire2017uZRlliWUmOl8Mkm9y8AGX7PD";
     $this->ids = [];
-    $this->fieldList = "Store_Number__c,Name,BillingStreet,BillingCity,BillingState,BillingPostalCode,Phone,Store_Director_Formula__c,Store_Hours__c,Beverage_Depot_Location__c,Has_Bakery__c,Has_Deli__c,Has_Weekly_Ad__c,Has_Floral__c,Redbox__c,Store_Location__Latitude__s,Store_Location__Longitude__s,BB_Pharmacy__c,Pharmacy_Number__c,Pharmacist_Text__c,Pharmacy_State_Board_Number__c,Pharmacy_Phone__c,Pharmacy_Fax__c,Pharmacy_Hours__c,Has_Pharmacy_Drive_Thru__c,Offers_Flu_Shot__c,Has_Fuel__c,Fuel_Brand__c,BB_Tobacco_Barn__c,Tobacco_Barn_Number__c,Tobacco_Barn_Manager_Text__c,Tobacco_Barn_Hours__c,Has_Subway__c,Subway_Phone__c,Subway_Director__c,Has_Washateria__c,Washateria_Phone__c,Washateria_Director__c,Has_Car_Wash__c,Car_Wash_Phone__c,Car_Wash_Director__c,Has_Mr_Payroll__c,Mr_Payroll_Phone__c,BBros_Text_Signup__c,TBarn_Text_signup__c,WeeklyAd__c,Bissell_Location__c";
+    $this->fieldList = "Store_Number__c,Name,BillingStreet,BillingCity,BillingState,BillingPostalCode,Phone,Store_Director_Formula__c,Store_Hours__c,Beverage_Depot_Location__c,GooglePlusDataString__c,Has_Bakery__c,Has_Deli__c,Has_Weekly_Ad__c,Has_Floral__c,Redbox__c,Store_Location__Latitude__s,Store_Location__Longitude__s,BB_Pharmacy__c,Pharmacy_Number__c,Pharmacist_Text__c,Pharmacy_State_Board_Number__c,Pharmacy_Phone__c,Pharmacy_Fax__c,Pharmacy_Hours__c,Has_Pharmacy_Drive_Thru__c,Offers_Flu_Shot__c,Has_Fuel__c,Fuel_Brand__c,BB_Tobacco_Barn__c,Tobacco_Barn_Number__c,Tobacco_Barn_Manager_Text__c,Tobacco_Barn_Hours__c,Has_Subway__c,Subway_Phone__c,Subway_Director__c,Has_Washateria__c,Washateria_Phone__c,Washateria_Director__c,Has_Car_Wash__c,Car_Wash_Phone__c,Car_Wash_Director__c,Has_Mr_Payroll__c,Mr_Payroll_Phone__c,BBros_Text_Signup__c,TBarn_Text_signup__c,WeeklyAd__c,Bissell_Location__c";
   }
 
   /**
@@ -321,6 +321,7 @@ class StoreLocatorController extends ControllerBase {
             ->condition('type', 'store_location')
             ->condition('field_number_store', $store_number);
           $node = $query->execute();
+          var_dump($store_number);
         }
       }
     }
