@@ -320,8 +320,10 @@ class StoreLocatorController extends ControllerBase {
           $query = Drupal::entityQuery('node')
             ->condition('type', 'store_location')
             ->condition('field_number_store', $store_number);
-          $node = $query->execute();
-          var_dump($store_number);
+          if (($result = $query->execute()) !== NULL) {
+            var_dump(reset($result));
+            echo $store_number . '<br /><br />';
+          }
         }
       }
     }
