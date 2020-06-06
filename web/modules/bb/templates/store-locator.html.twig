@@ -36,37 +36,26 @@
 
     <div id="moreOptionsSection">
 
-      <!-- Main Locations --->
-      {% for department in items.departments %}
+      <!-- Locations --->
+      <p>Include these locations:</p>
+      {% for location in items.locations %}
         <div class="field">
           <div class="control">
             <label class="checkbox">
-              <input type="checkbox" checked="checked" name="{{ department.name}}">
-              {{ department.name }}
+              <input type="checkbox" checked="checked" name="{{ location.name}}">
+              {{ location.name }}
             </label>
           </div>
         </div>
       {% endfor %}
 
       <p>Include results with:</p>
-      {% for specification in items.specifications %}
+      {% for department in items.departments %}
         <div class="field">
           <div class="control">
             <label class="checkbox">
-              <input type="checkbox" checked="checked" name="{{ specification.name }}">
-              {{ specification.name }}
-            </label>
-          </div>
-        </div>
-      {% endfor %}
-
-      <p>Find locations of:</p>
-      {% for location in items.locations %}
-        <div class="field">
-          <div class="control">
-            <label class="checkbox">
-              <input type="checkbox" checked="checked" name="{{ location.name }}">
-              {{ location.name }}
+              <input type="checkbox" checked="checked" name="{{ department.name }}">
+              {{ department.name }}
             </label>
           </div>
         </div>

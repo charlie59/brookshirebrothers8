@@ -27,7 +27,10 @@ class StoreLocatorController extends ControllerBase {
   protected $mySforceConnection;
   protected $ids;
   protected $fieldList;
+  protected $locations;
   protected $sfStores;
+  protected $entityTypeManager;
+  protected $nodeType;
 
 
   /**
@@ -35,11 +38,77 @@ class StoreLocatorController extends ControllerBase {
    */
   public function __construct() {
     $this->messenger = Drupal::messenger();
+    $this->entityTypeManager = Drupal::entityTypeManager();
     $this->soapDir = __DIR__ . "/../../../../libraries/salesforce/soapclient";
     $this->soapUser = "drupalintegration@brookshirebros.com";
     $this->soapPass = "Br00kshire2017uZRlliWUmOl8Mkm9y8AGX7PD";
     $this->ids = [];
-    $this->fieldList = "Store_Number__c,Name,BillingStreet,BillingCity,BillingState,BillingPostalCode,Phone,Store_Director_Formula__c,Store_Hours__c,Beverage_Depot_Location__c,GooglePlusDataString__c,Has_Bakery__c,Has_Deli__c,Has_Weekly_Ad__c,Has_Floral__c,Redbox__c,Store_Location__Latitude__s,Store_Location__Longitude__s,BB_Pharmacy__c,Pharmacy_Number__c,Pharmacist_Text__c,Pharmacy_State_Board_Number__c,Pharmacy_Phone__c,Pharmacy_Fax__c,Pharmacy_Hours__c,Has_Pharmacy_Drive_Thru__c,Offers_Flu_Shot__c,Has_Fuel__c,Fuel_Brand__c,BB_Tobacco_Barn__c,Tobacco_Barn_Number__c,Tobacco_Barn_Manager_Text__c,Tobacco_Barn_Hours__c,Has_Subway__c,Subway_Phone__c,Subway_Director__c,Has_Washateria__c,Washateria_Phone__c,Washateria_Director__c,Has_Car_Wash__c,Car_Wash_Phone__c,Car_Wash_Director__c,Has_Mr_Payroll__c,Mr_Payroll_Phone__c,BBros_Text_Signup__c,TBarn_Text_signup__c,WeeklyAd__c,Bissell_Location__c";
+    $this->nodeType = 'store_location';
+    $this->fieldList = [
+      'Store_Number__c' => 'field_number_store',
+      'Name' => 'field_store_name',
+      'BillingStreet' => 'field_address',
+      'BillingCity' => 'field_city',
+      'BillingState' => 'field_state',
+      'BillingPostalCode' => 'field_zip_code',
+      'Phone' => 'field_store_phone',
+      'Store_Director_Formula__c' => 'field_store_manager',
+      'Store_Hours__c' => 'field_store_hours',
+      'Beverage_Depot_Location__c' => ['field_department' => 7],
+      'Has_Bakery__c' => ['field_department' => 8],
+      'Has_Deli__c' => ['field_department' => 9],
+      'Has_Weekly_Ad__c' => 'field_weekly_ad',
+      'Has_Floral__c' => ['field_department' => 10],
+      'Has_Subway__c' => ['field_department' => 677],
+      'Redbox__c' => ['field_department' => 592],
+      'Has_Pharmacy_Drive_Thru__c' => ['field_department' => 4],
+      'Offers_Flu_Shot__c' => ['field_department' => 5],
+      'Has_Fuel__c' => ['field_department' => 6],
+      'BB_Pharmacy__c' => ['field_department' => 3],
+      'Bissell_Location__c' => ['field_department' => 588],
+      'BB_Tobacco_Barn__c' => ['field_department' => 678],
+      'Has_Washateria__c' => ['field_department' => 679],
+      'Has_Car_Wash__c' => ['field_department' => 680],
+      'Has_Mr_Payroll__c' => ['field_department' => 681],
+      'Store_Location__Latitude__s' => 'field_latitude',
+      'Store_Location__Longitude__s' => 'field_longitude',
+      'GooglePlusDataString__c' => 'field_google_plus_code',
+      'Pharmacy_Number__c' => 'field_pharmacy_number',
+      'Pharmacist_Text__c' => 'field_pharmacist',
+      'Pharmacy_State_Board_Number__c' => 'field_state_board_number',
+      'Pharmacy_Phone__c' => 'field_pharmacy_phone',
+      'Pharmacy_Fax__c' => 'field_pharmacy_fax',
+      'Pharmacy_Hours__c' => 'field_pharmacy_hours',
+      'Fuel_Brand__c' => 'field_fuel_brand',
+      'Tobacco_Barn_Number__c' => 'field_barn_number',
+      'Tobacco_Barn_Manager_Text__c' => 'field_barn_manager',
+      'Tobacco_Barn_Hours__c' => 'field_barn_hours',
+      'Subway_Phone__c' => 'field_subway_phone',
+      'Subway_Director__c' => 'field_subway_director',
+      'Washateria_Phone__c' => 'field_washateria_phone',
+      'Washateria_Director__c' => 'field_washateria_director',
+      'Car_Wash_Phone__c' => 'field_car_wash_phone',
+      'Car_Wash_Director__c' => 'field_car_wash_director',
+      'Mr_Payroll_Phone__c' => 'field_mr_payroll_phone',
+      'BBros_Text_Signup__c' => 'field_bbros_text_signup__c',
+      'TBarn_Text_signup__c' => 'field_tbarn_text_signup__c',
+      'WeeklyAd__c' => 'field_weekly_ad_link',
+    ];
+    $this->locations = [
+      ['B&B Express' => 672],
+      ['B&B Stand Alone Pharmacy' => 675],
+      ['Brookshire Brothers' => 1],
+      ['Brookshire Brothers Express' => 2],
+      ['Cormie’s Grocery' => 12],
+      ['David’s' => 14],
+      ['David’s Express' => 15],
+      ['Pecan Foods' => 16],
+      ['Petro Barn - stand alone' => 673],
+      ['Polk Pick It Up' => 11],
+      ['Subway' => 676],
+      ['Texas Star' => 674],
+      ['Tobacco Barn by Brookshire Brothers' => 13],
+    ];
   }
 
   /**
@@ -53,31 +122,8 @@ class StoreLocatorController extends ControllerBase {
     $items = [];
 
     /* Preprocessing for Store Locator */
-    $terms = Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree('department');
-    $departments = [];
-    foreach ($terms as $term) {
-      $departments[] = [
-        'id' => $term->tid,
-        'name' => $term->name,
-      ];
-    }
-    $items['departments'] = $departments;
-
-    try {
-      $terms = Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree('specification');
-    } catch (Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException $e) {
-    } catch (Drupal\Component\Plugin\Exception\PluginNotFoundException $e) {
-    }
-    $specifications = [];
-    foreach ($terms as $term) {
-      $specifications[] = [
-        'id' => $term->tid,
-        'name' => $term->name,
-      ];
-    }
-    $items['specifications'] = $specifications;
-
-    $terms = Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree('locations');
+    /* Locations */
+    $terms = $this->entityTypeManager->getStorage('taxonomy_term')->loadTree('department');
     $locations = [];
     foreach ($terms as $term) {
       $locations[] = [
@@ -86,6 +132,21 @@ class StoreLocatorController extends ControllerBase {
       ];
     }
     $items['locations'] = $locations;
+
+    /* Departments */
+    try {
+      $terms = $this->entityTypeManager->getStorage('taxonomy_term')->loadTree('specification');
+    } catch (Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException $e) {
+    } catch (Drupal\Component\Plugin\Exception\PluginNotFoundException $e) {
+    }
+    $departments = [];
+    foreach ($terms as $term) {
+      $departments[] = [
+        'id' => $term->tid,
+        'name' => $term->name,
+      ];
+    }
+    $items['departments'] = $departments;
 
     // Render the 'store_locator' theme.
     $build['store_locator'] = [
@@ -147,93 +208,40 @@ class StoreLocatorController extends ControllerBase {
 
     /* Get all Matching Store Locations */
     $query = Drupal::entityQuery('node');
-    $query->condition('type', 'store_location');
+    $query->condition('type', $this->nodeType);
 
-    /* Main Locations taxonomy, field is named field_department */
+    /* Locations taxonomy, machine_name department */
     try {
-      $terms = Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree('department');
-    } catch (InvalidPluginDefinitionException $e) {
-    } catch (PluginNotFoundException $e) {
-    }
-    $mainLocations = [];
-    if (isset($_GET['Brookshire_Brothers'])) {
-      $mainLocations[] = 1;
-    }
-    if (isset($_GET['Brookshire_Brothers_Express'])) {
-      $mainLocations[] = 2;
-    }
-    if (count($mainLocations) > 0 && count($mainLocations) < count($terms)) {
-      $query->condition('field_department', $mainLocations, "IN");
-    }
-
-    /* Departments taxonomy, field is named field_specification */
-    try {
-      $terms = Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree('specification');
-    } catch (InvalidPluginDefinitionException $e) {
-    } catch (PluginNotFoundException $e) {
-    }
-    $departments = [];
-    if (isset($_GET['Pharmacy'])) {
-      $departments[] = 3;
-    }
-    if (isset($_GET['Redbox'])) {
-      $departments[] = 592;
-    }
-    if (isset($_GET['Drive-thru_Pharmacy'])) {
-      $departments[] = 4;
-    }
-    if (isset($_GET['Flu_Shot'])) {
-      $departments[] = 5;
-    }
-    if (isset($_GET['Fuel'])) {
-      $departments[] = 6;
-    }
-    if (isset($_GET['Beverage_Depot_(21_and_over_to_purchase)'])) {
-      $departments[] = 7;
-    }
-    if (isset($_GET['Bakery'])) {
-      $departments[] = 8;
-    }
-    if (isset($_GET['Deli'])) {
-      $departments[] = 9;
-    }
-    if (isset($_GET['Floral'])) {
-      $departments[] = 10;
-    }
-    if (isset($_GET['Bissell_Rental'])) {
-      $departments[] = 588;
-    }
-    if (count($departments) > 0 && count($departments) < count($terms)) {
-      $query->condition('field_specification', $departments, "IN");
-    }
-
-    /* (Secondary) Locations taxonomy, field is named field_department */
-    try {
-      $terms = Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree('locations');
+      $terms = $this->entityTypeManager->getStorage('taxonomy_term')->loadTree('department');
     } catch (InvalidPluginDefinitionException $e) {
     } catch (PluginNotFoundException $e) {
     }
     $locations = [];
-    if (isset($_GET['Cormie’s_Grocery'])) {
-      $locations[] = 12;
-    }
-    if (isset($_GET['David’s'])) {
-      $locations[] = 14;
-    }
-    if (isset($_GET['David’s_Express'])) {
-      $locations[] = 15;
-    }
-    if (isset($_GET['Pecan_Foods'])) {
-      $locations[] = 16;
-    }
-    if (isset($_GET['Polk_Pick-It-Up'])) {
-      $locations[] = 11;
-    }
-    if (isset($_GET['Tobacco_Barn'])) {
-      $locations[] = 13;
+    foreach ($terms as $term) {
+      $fixed = str_replace(' ', '_', $term->name);
+      if (isset($fixed)) {
+        $locations[] = $term->tid;
+      }
     }
     if (count($locations) > 0 && count($locations) < count($terms)) {
-      $query->condition('field_locations', $locations, "IN");
+      $query->condition('field_location', $locations, "IN");
+    }
+
+    /* Departments taxonomy, field is named field_department */
+    try {
+      $terms = $this->entityTypeManager->getStorage('taxonomy_term')->loadTree('specification');
+    } catch (InvalidPluginDefinitionException $e) {
+    } catch (PluginNotFoundException $e) {
+    }
+    $departments = [];
+    foreach ($terms as $term) {
+      $fixed = str_replace(' ', '_', $term->name);
+      if (isset($fixed)) {
+        $departments[] = $term->tid;
+      }
+    }
+    if (count($departments) > 0 && count($departments) < count($terms)) {
+      $query->condition('field_department', $departments, "IN");
     }
 
     $nids = $query->execute();
@@ -288,22 +296,32 @@ class StoreLocatorController extends ControllerBase {
    * Retrieve field values from Salesforce.
    */
   private function getSfStores() {
-    $this->sfStores = $this->mySforceConnection->retrieve($this->fieldList, 'Account', $this->ids);;
+    $fields = '';
+    foreach ($this->fieldList as $k => $v) {
+      $fields .= $k . ',';
+    }
+    $string = rtrim($fields, ',');
+    $this->sfStores = $this->mySforceConnection->retrieve($string, 'Account', $this->ids);;
   }
 
   /**
    * Connect to Salesforce and update Store nodes.
    * TODO - there's probably a more Drupal way of doing this.
+   *
+   * @return string[]
+   * @throws Drupal\Core\Entity\EntityStorageException
    */
   function updateStores() {
 
-    require_once ($this->soapDir.'/SforcePartnerClient.php');
-    require_once ($this->soapDir.'/SforceHeaderOptions.php');
-    require_once ($this->soapDir.'/SforceBaseClient.php');
+    require_once($this->soapDir . '/SforcePartnerClient.php');
+    require_once($this->soapDir . '/SforceHeaderOptions.php');
+    require_once($this->soapDir . '/SforceBaseClient.php');
+
+    $counter = 0;
 
     try {
       $this->mySforceConnection = new SforcePartnerClient();
-      $this->mySforceConnection->createConnection($this->soapDir.'/partner.wsdl.xml');
+      $this->mySforceConnection->createConnection($this->soapDir . '/partner.wsdl.xml');
       $this->mySforceConnection->login($this->soapUser, $this->soapPass);
     } catch (Exception $e) {
       echo $this->mySforceConnection->getLastRequest();
@@ -315,21 +333,87 @@ class StoreLocatorController extends ControllerBase {
 
     if (count($this->sfStores) > 0) {
       foreach ($this->sfStores as $object) {
-        $store_number = $object->fields->Store_Number__c;
+        $sfValues = $object->fields;
+        // print_r($sfValues);
+        $store_number = $sfValues->Store_Number__c;
+        // Something very wrong if no Store Number from Salesforce.
         if (!empty($store_number)) {
+          $node = NULL;
           $query = Drupal::entityQuery('node')
-            ->condition('type', 'store_location')
+            ->condition('type', $this->nodeType)
             ->condition('field_number_store', $store_number);
-          if (($result = $query->execute()) !== NULL) {
-            var_dump(reset($result));
-            echo $store_number . '<br /><br />';
+          $result = $query->execute();
+          // Set up values for upsert
+          $values = ['title' => $sfValues->Name . ' Store ' . $store_number];
+          // Departments taxonomy
+          $values['field_department'] = [];
+          // Main locations taxonomy
+          $values['field_location'] = [];
+          foreach ($this->fieldList as $sfField => $fieldName) {
+            switch ($sfField) {
+              case 'Name':
+                $values['field_store_name'] = $sfValues->Name;
+                $values['field_display_title'] = $sfValues->Name;
+                foreach ($this->locations as $location) {
+                  $tmp = key($location);
+                  if ($sfValues->Name == $tmp) {
+                    $values['field_location'][] = ['target_id' => $location[$tmp]];
+                    continue;
+                  }
+                }
+                break;
+
+              default:
+                if (is_array($fieldName)) {
+                  // Salesforce returns true or false for checkboxes.
+                  $val = $sfValues->$sfField == 'true' ? 1 : 0;
+                  if ($val === 1) {
+                    // Set taxonomy value
+                    $values['field_department'][] = ['target_id' => $fieldName['field_department']];
+                  }
+                } else {
+                  switch ($sfValues->$sfField) {
+                    case 'true';
+                      $val = 1;
+                      break;
+                    case 'false':
+                      $val = 0;
+                      break;
+                    default:
+                      $val = $sfValues->$sfField;
+                  }
+                  $values[$fieldName] = $val;
+                }
+            }
           }
+          // print_r($values);
+          // Query returns empty array if no match for Store Number in existing node values.
+          if (count($result) > 0) {
+            try {
+              $node = $this->entityTypeManager->getStorage('node')->load(reset($result));
+              foreach ($values as $field => $value) {
+                $node->$field = $value;
+              }
+            } catch (InvalidPluginDefinitionException $e) {
+            } catch (PluginNotFoundException $e) {
+            }
+          } else {
+            try {
+              $storage = $this->entityTypeManager->getStorage('node');
+              $values['type'] = $this->nodeType;
+              $node = $storage->create($values);
+            } catch (InvalidPluginDefinitionException $e) {
+            } catch (PluginNotFoundException $e) {
+            }
+          }
+          $node->save();
+          $counter++;
         }
       }
     }
 
     return [
-      '#markup' => 'Update completed',
+      '#markup' => "<p>Imported $counter stores.</p>",
     ];
 
   }

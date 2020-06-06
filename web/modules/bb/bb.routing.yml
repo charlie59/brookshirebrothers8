@@ -17,7 +17,7 @@ bb.store_locator_results:
 bb.store_updater:
   path: '/admin/store-updater'
   defaults:
-    _title: 'Update Stores from Salesforce'
+    _title: 'Update Store data from Salesforce'
     _controller: '\Drupal\bb\Controller\StoreLocatorController::updateStores'
   requirements:
     _permission: 'access administration pages'

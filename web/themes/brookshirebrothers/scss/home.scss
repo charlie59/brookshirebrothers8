@@ -174,14 +174,21 @@
         text-transform: capitalize;
         color: #e2231a;
         text-align: left;
+        margin-bottom: 0.6rem;
       }
       .article-box {
         display: flex;
+        .text-box {
+          p {
+            line-height: 1.3rem;
+            margin-bottom: 2.8rem;
+          }
+        }
       }
       a.learnmore {
         position: absolute;
         bottom: 1rem;
-        left: 0.5rem;
+        left: 1rem;
         padding-left: 2rem;
         text-transform: uppercase;
         color: #e2231a;
