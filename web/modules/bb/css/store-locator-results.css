@@ -18,6 +18,7 @@
   grid-template-columns: 15% 45% 15% 15%;
   gap: 1rem;
   align-items: center;
+  margin-bottom: 0.3rem;
 }
 
 .store .number {
