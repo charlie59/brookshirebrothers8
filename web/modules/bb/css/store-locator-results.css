@@ -54,6 +54,7 @@
 .store .details svg {
   position: relative;
   top: 2px;
+  margin-right: 0.2rem;
 }
 
 .store .ad {
