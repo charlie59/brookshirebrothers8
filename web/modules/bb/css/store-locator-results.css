@@ -7,3 +7,50 @@
   height: 40vh;
   width: 100%;
 }
+
+#results {
+  margin-top: 2rem;
+}
+
+.store {
+  border-top: solid #eae9e5 1px;
+  display: grid;
+  grid-template-columns: 15% 60% 15%;
+  gap: 1rem;
+}
+
+.store .number {
+  font-size: 3rem;
+  margin: 0.1em 0.4em 0 0;
+  color: #e2231a;
+}
+
+.store .info {
+  display: flex;
+  align-items: center;
+}
+
+.store .info div {
+  margin-right: 0.4rem;
+}
+
+.store .ad {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.store .ad svg {
+  font-size: 3rem;
+}
+
+.store .ad a {
+  color: #e2231a;
+}
+
+@media only screen and (max-width: 767px) {
+  .store {
+    display: flex;
+    gap: 1rem;
+  }
+}

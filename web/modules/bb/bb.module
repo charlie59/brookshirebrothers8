@@ -28,3 +28,24 @@ function bb_theme($existing, $type, $theme, $path) {
     ],
   ];
 }
+
+/**
+ * Update cron job.
+ *
+ * @throws Drupal\Core\Entity\EntityStorageException
+ */
+function bb_cron() {
+  $interval = 24*60*60;
+  $next_execution = Drupal::state()->get('cron_example.next_execution');
+  $next_execution = !empty($next_execution) ? $next_execution : 0;
+  $time = Drupal::time()->getRequestTime();
+  if ($time >= $next_execution) {
+    $job = new Drupal\bb\Controller\StoreLocatorController;
+    $job->updateStores();
+    if (Drupal::state()->get('bb_show_status_message')) {
+      Drupal::logger('bb')->notice(t('update executed at %time', ['%time' => date('c',$time)]));
+      Drupal::state()->set('bb_show_status_message', FALSE);
+    }
+    Drupal::state()->set('bb.next_execution', $time + $interval);
+  }
+}

@@ -259,12 +259,20 @@ class StoreLocatorController extends ControllerBase {
       $lat = $node->get('field_latitude')->value;
       $lng = $node->get('field_longitude')->value;
       $distance = $this->distance($latLong['lat'], $latLong['lng'], $lat, $lng);
+      $url = $node->toUrl()->toString();
       if ($distance <= (int)$_GET['filterDistance']) {
         $stores[] = [
           'nid' => $nid,
-          'title' => $node->getTitle(),
+          'link' => $url,
+          'title' => $node->get('field_display_title')->value,
           'lat' => $lat,
           'lng' => $lng,
+          'google_plus_code' => $node->get('field_google_plus_code')->value,
+          'address' => $node->get('field_address')->value,
+          'city' => $node->get('field_city')->value,
+          'state' => $node->get('field_state')->value,
+          'zip' => $node->get('field_zip_code')->value,
+          'adLink' => $node->get('field_weekly_ad_link')->value,
         ];
       }
     }
@@ -413,7 +421,7 @@ class StoreLocatorController extends ControllerBase {
     }
 
     return [
-      '#markup' => "<p>Imported $counter stores.</p>",
+      '#markup' => "<p>Updated $counter stores.</p>",
     ];
 
   }

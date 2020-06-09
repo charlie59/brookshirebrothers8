@@ -9,7 +9,6 @@
       of {{ items.zipCode }} | <a href="/store-locator">Search Again</a>
     </p>
 
-
     <div id="map">Map</div>
 
     <script>
@@ -20,38 +19,41 @@
         let infoWindow = new google.maps.InfoWindow();
         let map = new google.maps.Map(
           document.getElementById('map'), {
-            zoom: 18,
+            zoom: 9,
             center: elCentro,
             mapTypeId: google.maps.MapTypeId.ROADMAP,
             imageDefaultUI: true
           });
         let service = new google.maps.places.PlacesService(map);
 
-        let request = {
-          query: '86MW+86 Lufkin, Texas',
+        {% for store in items.stores %}
+        {% if store.google_plus_code|length %}
+
+        let request_{{ store.nid }} = {
+          query: '{{ store.google_plus_code }}',
           fields: ['name', 'geometry'],
         };
 
-        service.findPlaceFromQuery(request, function (results, status) {
+        service.findPlaceFromQuery(request_{{ store.nid }}, function (results, status) {
           if (status === google.maps.places.PlacesServiceStatus.OK) {
             for (let i = 0; i < results.length; i++) {
-              createMarker(results[i]);
+              let marker_{{ store.nid }} = new google.maps.Marker({
+                map: map,
+                label: '{{ loop.index }}',
+                position: results[i].geometry.location,
+              });
+
+              google.maps.event.addListener(marker_{{ store.nid }}, 'click', function () {
+                infoWindow.setContent('{{ store.title }}');
+                infoWindow.open(map, this);
+              });
             }
             map.setCenter(results[0].geometry.location);
           }
         });
 
-        function createMarker(place) {
-          let marker = new google.maps.Marker({
-            map: map,
-            position: place.geometry.location,
-          });
-
-          google.maps.event.addListener(marker, 'click', function() {
-            infoWindow.setContent('Brookshire Brothers');
-            infoWindow.open(map, this);
-          });
-        }
+        {% endif %}
+        {% endfor %}
 
       }
     </script>
@@ -60,9 +62,17 @@
 
     <div id="results">
       {% for store in items.stores %}
-        <div class="store">
-          <h1>{{ loop.index }}</h1>
-          {{ drupal_entity('node', store.nid, 'teaser') }}
+        <div class="store {% set classes = ['odd', 'even'] %}{{ cycle(classes, loop.index0) }}">
+          <div class="number">{{ loop.index }}</div>
+          <div class="info">
+            <div class="has-text-weight-bold"><a href="{{ store.link }}">{{ store.title }}</a></div>
+            <div>{{ store.address }} {{ store.city }} {{ store.state }} {{ store.zip }}</div>
+          </div>
+          <div class="ad">
+            {% if store.adLink|length %}
+            <a href="{{ store.adLink }}" target="_blank" title="Weekly Ad"><i class="fas fa-cut"></i></a>
+            {%  endif %}
+          </div>
         </div>
       {% endfor %}
     </div>
