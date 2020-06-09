@@ -15,8 +15,9 @@
 .store {
   border-top: solid #eae9e5 1px;
   display: grid;
-  grid-template-columns: 15% 60% 15%;
+  grid-template-columns: 15% 45% 15% 15%;
   gap: 1rem;
+  align-items: center;
 }
 
 .store .number {
@@ -32,6 +33,26 @@
 
 .store .info div {
   margin-right: 0.4rem;
+}
+
+.store .details {
+  color: #e2231a;
+  align-items: center;
+  background-color: whitesmoke;
+  border-radius: 290486px;
+  display: inline-flex;
+  font-size: 1rem;
+  padding: 0.25rem 0.5rem;
+  text-align: center;
+}
+
+.store .details a {
+  color: #e2231a;
+}
+
+.store .details svg {
+  position: relative;
+  top: 2px;
 }
 
 .store .ad {

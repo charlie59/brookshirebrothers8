@@ -2,7 +2,7 @@ bb.store_locator:
   path: '/store-locator'
   defaults:
     _controller: '\Drupal\bb\Controller\StoreLocatorController::locatorForm'
-    _title: 'Find a Store'
+    _title: 'Find Stores & Weekly Ads'
   requirements:
     _permission: 'access content'
 

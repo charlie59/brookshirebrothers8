@@ -64,7 +64,7 @@ class StoreLocatorController extends ControllerBase {
     $this->ids = [];
     $this->nodeType = 'store_location';
     $this->fieldList = [
-      'Store_Number__c' => 'field_number_store',
+      'Store_Number__c' => 'field_store_number',
       'Name' => 'field_store_name',
       'BillingStreet' => 'field_address',
       'BillingCity' => 'field_city',
@@ -389,7 +389,7 @@ class StoreLocatorController extends ControllerBase {
           $node = NULL;
           $query = Drupal::entityQuery('node')
             ->condition('type', $this->nodeType)
-            ->condition('field_number_store', $store_number);
+            ->condition('field_store_number', $store_number);
           $result = $query->execute();
           // Set up values for upsert
           $values = ['title' => $sfValues->Name . ' Store ' . $store_number];
