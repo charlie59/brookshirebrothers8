@@ -13,6 +13,8 @@ bb.store_locator_results:
     _title: 'Stores Near You'
   requirements:
     _permission: 'access content'
+  options:
+    no_cache: 'TRUE'
 
 bb.store_updater:
   path: '/admin/store-updater'
