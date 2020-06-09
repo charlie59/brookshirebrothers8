@@ -4699,7 +4699,7 @@ body {
   margin-bottom: 0;
 }
 
-.messages--error {
+.messages--error, .messages--status {
   box-shadow: unset !important;
   text-align: center;
 }
@@ -4893,17 +4893,6 @@ ul.menu {
 }
 
 /* Overrides */
-/* Store Locator */
-.store-locator .input {
-  width: unset;
-}
-.store-locator #moreOptions {
-  cursor: pointer;
-}
-.store-locator #moreOptionsSection {
-  display: none;
-}
-
 .path-frontpage .layout-content {
   display: block;
   grid-template-columns: unset;

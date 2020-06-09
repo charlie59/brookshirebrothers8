@@ -34,7 +34,7 @@ body {
   }
 }
 
-.messages--error {
+.messages--error, .messages--status {
   box-shadow: unset!important;
   text-align: center;
 }

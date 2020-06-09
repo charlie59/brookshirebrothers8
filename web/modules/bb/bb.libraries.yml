@@ -11,6 +11,9 @@ google-maps:
 
 store-locator:
   version: VERSION
+  css:
+    theme:
+      css/store-locator.css: { weight: 1 }
   js:
     js/store-locator.js: {}
   dependencies:

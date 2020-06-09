@@ -57,7 +57,6 @@ class StoreLocatorController extends ControllerBase {
       'Beverage_Depot_Location__c' => ['field_department' => 7],
       'Has_Bakery__c' => ['field_department' => 8],
       'Has_Deli__c' => ['field_department' => 9],
-      'Has_Weekly_Ad__c' => 'field_weekly_ad',
       'Has_Floral__c' => ['field_department' => 10],
       'Has_Subway__c' => ['field_department' => 677],
       'Redbox__c' => ['field_department' => 592],
@@ -92,6 +91,7 @@ class StoreLocatorController extends ControllerBase {
       'Mr_Payroll_Phone__c' => 'field_mr_payroll_phone',
       'BBros_Text_Signup__c' => 'field_bbros_text_signup__c',
       'TBarn_Text_signup__c' => 'field_tbarn_text_signup__c',
+      'Has_Weekly_Ad__c' => 'field_weekly_ad',
       'WeeklyAd__c' => 'field_weekly_ad_link',
     ];
     $this->locations = [
@@ -191,6 +191,7 @@ class StoreLocatorController extends ControllerBase {
 
   /**
    * Results template.
+   * @throws Drupal\Core\Entity\EntityMalformedException
    */
   public function locatorResults() {
 
@@ -205,6 +206,8 @@ class StoreLocatorController extends ControllerBase {
     $terms = [];
     $items = [];
     $stores = [];
+    $lat = '';
+    $lng = '';
 
     /* Get all Matching Store Locations */
     $query = Drupal::entityQuery('node');
@@ -246,13 +249,6 @@ class StoreLocatorController extends ControllerBase {
 
     $nids = $query->execute();
 
-    // get LatLong from zipcode
-    $latLong = $this->getLatLong($zipCode);
-    $items['latLong'] = [
-      'lat' => $latLong['lat'],
-      'lng' => $latLong['lng'],
-    ];
-
     foreach ($nids as $nid) {
       $node = Node::Load($nid);
       // Use stored lat and lng to get distance in miles from search zipCode
@@ -260,6 +256,12 @@ class StoreLocatorController extends ControllerBase {
       $lng = $node->get('field_longitude')->value;
       $distance = $this->distance($latLong['lat'], $latLong['lng'], $lat, $lng);
       $url = $node->toUrl()->toString();
+      if (!isset($items['showWeeklyAdText'])) {
+        $weeklyAd = $node->get('field_weekly_ad')->value;
+        if ($weeklyAd == 1) {
+          $items['showWeeklyAdText'] = 1;
+        }
+      }
       if ($distance <= (int)$_GET['filterDistance']) {
         $stores[] = [
           'nid' => $nid,
@@ -280,6 +282,20 @@ class StoreLocatorController extends ControllerBase {
     $items['zipCode'] = $zipCode;
     $items['distance'] = (int)$_GET['filterDistance'];
     $items['total'] = count($stores);
+
+    // get LatLong from zipcode
+    $latLong = $this->getLatLong($zipCode);
+    if ($latLong == NULL) {
+      $items['latLong'] = [
+        'lat' => $lat,
+        'lng' => $lng,
+      ];
+    } else {
+      $items['latLong'] = [
+        'lat' => $latLong['lat'],
+        'lng' => $latLong['lng'],
+      ];
+    }
 
     // Render the 'store_locator_results' theme.
     $build['store_locator_results'] = [

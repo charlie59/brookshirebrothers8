@@ -61,16 +61,17 @@
             src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAQNRPaZd4ibswz8dB7gpOZyajfvtkRaAI&libraries=places&callback=initMap"></script>
 
     <div id="results">
+      {% if items.showWeeklyAdText %}<p>Click <i class="fas fa-cut"> </i> to see a store's weekly ad</p>{% endif %}
       {% for store in items.stores %}
         <div class="store {% set classes = ['odd', 'even'] %}{{ cycle(classes, loop.index0) }}">
           <div class="number">{{ loop.index }}</div>
           <div class="info">
             <div class="has-text-weight-bold"><a href="{{ store.link }}">{{ store.title }}</a></div>
-            <div>{{ store.address }} {{ store.city }} {{ store.state }} {{ store.zip }}</div>
+            <div>{{ store.address }}, {{ store.city }} {{ store.state }} {{ store.zip }}</div>
           </div>
           <div class="ad">
             {% if store.adLink|length %}
-            <a href="{{ store.adLink }}" target="_blank" title="Weekly Ad"><i class="fas fa-cut"></i></a>
+            <a href="{{ store.adLink }}" target="_blank" title="Weekly Ad"><i class="fas fa-cut"> </i></a>
             {%  endif %}
           </div>
         </div>
