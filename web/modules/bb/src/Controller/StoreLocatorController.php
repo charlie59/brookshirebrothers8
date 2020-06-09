@@ -6,9 +6,27 @@ use Drupal;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
 use Drupal\Component\Plugin\Exception\PluginNotFoundException;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\node\Entity\Node;
 use Exception;
 use SforcePartnerClient;
+
+/**
+ * Class latLongNullException.
+ *
+ * @package Drupal\bb\Controller
+ */
+class latLongNullException extends Exception {
+
+  /**
+   * latLongNullException constructor.
+   */
+  public function __construct() {
+    $message = new TranslatableMarkup('We’re sorry, we could not retrieve distance information for that zip code.');
+    parent::__construct($message);
+  }
+
+}
 
 /**
  * Class StoreLocatorForm.
@@ -21,6 +39,7 @@ class StoreLocatorController extends ControllerBase {
    * Var Setup.
    *
    */
+  protected $messenger;
   protected $soapDir;
   protected $soapUser;
   protected $soapPass;
@@ -165,8 +184,12 @@ class StoreLocatorController extends ControllerBase {
    */
   private function getLatLong($zip) {
     $url = "https://maps.googleapis.com/maps/api/geocode/json?&key=AIzaSyAQNRPaZd4ibswz8dB7gpOZyajfvtkRaAI&address=" . $zip;
-    $result_string = file_get_contents($url);
-    $result = json_decode($result_string, true);
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_URL, $url);
+    $data = curl_exec($ch);
+    curl_close($ch);
+    $result = json_decode($data, true);
     return $result['results'][0]['geometry']['location'];
   }
 
@@ -206,8 +229,6 @@ class StoreLocatorController extends ControllerBase {
     $terms = [];
     $items = [];
     $stores = [];
-    $lat = '';
-    $lng = '';
 
     /* Get all Matching Store Locations */
     $query = Drupal::entityQuery('node');
@@ -249,6 +270,23 @@ class StoreLocatorController extends ControllerBase {
 
     $nids = $query->execute();
 
+    /* throw Exception and return empty page with message if latLong is NULL */
+    $latLong = $this->getLatLong($zipCode);
+    try {
+      if ($latLong == NULL) {
+        throw new latLongNullException();
+      }
+    }
+    catch (latLongNullException $e) {
+      $this->messenger->addMessage($e->getMessage(), $this->messenger::TYPE_ERROR);
+      return ['#markup' => ''];
+    }
+
+    $items['latLong'] = [
+      'lat' => $latLong['lat'],
+      'lng' => $latLong['lng'],
+    ];
+
     foreach ($nids as $nid) {
       $node = Node::Load($nid);
       // Use stored lat and lng to get distance in miles from search zipCode
@@ -282,20 +320,6 @@ class StoreLocatorController extends ControllerBase {
     $items['zipCode'] = $zipCode;
     $items['distance'] = (int)$_GET['filterDistance'];
     $items['total'] = count($stores);
-
-    // get LatLong from zipcode
-    $latLong = $this->getLatLong($zipCode);
-    if ($latLong == NULL) {
-      $items['latLong'] = [
-        'lat' => $lat,
-        'lng' => $lng,
-      ];
-    } else {
-      $items['latLong'] = [
-        'lat' => $latLong['lat'],
-        'lng' => $latLong['lng'],
-      ];
-    }
 
     // Render the 'store_locator_results' theme.
     $build['store_locator_results'] = [

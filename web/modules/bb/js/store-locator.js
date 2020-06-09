@@ -13,6 +13,9 @@
         if (searchBox.val() === '') {
           e.preventDefault();
           $('.help').removeClass('is-hidden');
+        } else {
+          $('#loading').show();
+          $("#searchSubmit").hide();
         }
       })
     }
