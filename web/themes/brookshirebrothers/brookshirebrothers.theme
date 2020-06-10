@@ -1,5 +1,8 @@
 <?php
 
+use Drupal\Component\Utility\Html;
+use Drupal\taxonomy\Entity\Term;
+
 /**
  * Preprocessing for Blocks.
  *
@@ -44,6 +47,60 @@ function brookshirebrothers_preprocess_node(&$variables) {
       if (!empty($prescriptionLink)) {
         $variables['prescriptionLink'] = $prescriptionLink;
       }
+
+      /* Departments */
+      $referenced_entities = $node->get('field_department')->getValue();
+      foreach ($referenced_entities as $term) {
+        switch ($term['target_id']) {
+          case 8:
+            $variables['bakery'] = 1;
+            break;
+          case 7:
+            $variables['beverageDepot'] = 1;
+            break;
+          case 588:
+            $variables['bissellRental'] = 1;
+            break;
+          case 680:
+            $variables['carWash'] = 1;
+            break;
+          case 9:
+            $variables['deli'] = 1;
+            break;
+          case 4:
+            $variables['driveThruPharmacy'] = 1;
+            break;
+          case 10:
+            $variables['floral'] = 1;
+            break;
+          case 5:
+            $variables['fluShot'] = 1;
+            break;
+          case 6:
+            $variables['fuel'] = 1;
+            break;
+          case 681:
+            $variables['mrPayroll'] = 1;
+            break;
+          case 3:
+            $variables['pharmacy'] = 1;
+            break;
+          case 592:
+            $variables['redbox'] = 1;
+            break;
+          case 677:
+            $variables['subway'] = 1;
+            break;
+          case 678:
+            $variables['tobaccoBarn'] = 1;
+            break;
+          case 679:
+            $variables['washateria'] = 1;
+            break;
+        }
+      }
+
+
       break;
   }
 
