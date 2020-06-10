@@ -93,6 +93,7 @@
   {% endif %}
 </div>
 
+{% if node.field_bbros_text_signup__c.value|length or node.field_tbarn_text_signup__c.value|length %}
 <div id="signup">
   {% if node.field_bbros_text_signup__c.value|length %}
     <div class="has-text-weight-bold">Sign up to Brookshire Brothers Promo Alerts:</div>
@@ -102,6 +103,7 @@
     <div class="has-text-weight-bold">Sign up to Tobacco Barn Promo Alerts:</div>
     <div>{{ node.field_tbarn_text_signup__c.value }}</div>{% endif %}
 </div>
+{% endif %}
 
 <div id="hours">
   <div>Hours:</div> <div>{{ node.field_store_hours.value }}</div>
@@ -164,7 +166,7 @@
   </div>
 {% endif %}
 
-{% if carWash %}
+{% if carWash and node.field_car_wash_phone.value|length %}
   <div id="carWash">
     <div><h2 class="has-text-weight-bold">Car Wash</h2></div> <div> </div>
     <div>Phone:</div> <div>{{ node.field_car_wash_phone.value }}</div>
