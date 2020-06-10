@@ -85,3 +85,9 @@ user-locator:
     - core/jquery
     - core/jquery.once
     - core/jquery.cookie
+
+store-location:
+  version: VERSION
+  css:
+    theme:
+      css/store-location.css: { weight: 1 }

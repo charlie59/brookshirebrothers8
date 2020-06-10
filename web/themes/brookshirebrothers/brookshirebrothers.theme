@@ -14,3 +14,37 @@ function brookshirebrothers_preprocess_block(&$variables) {
     }
   }
 }
+
+/**
+ * Preprocessing for nodes
+ *
+ * @param $variables
+ */
+function brookshirebrothers_preprocess_node(&$variables) {
+  switch ($variables['node']->getType()) {
+    case 'store_location':
+      $node = $variables['node'];
+
+      /* Map link */
+      $string = $node->get('field_display_title')->value . ' '
+        . $node->get('field_address')->value . ', '
+        . $node->get('field_city')->value . ' '
+        . $node->get('field_state')->value . ' '
+        . $node->get('field_zip_code')->value;
+      $variables['mapLink'] = urlencode($string);
+
+      /* Weekly Ad Link */
+      $hasAd = $node->get('field_weekly_ad')->value;
+      if ($hasAd == 1) {
+        $variables['adLink'] = $node->get('field_weekly_ad_link')->value;
+      }
+
+      /* Prescription Link */
+      $prescriptionLink = $node->get('field_prescription_refill_link')->value;
+      if (!empty($prescriptionLink)) {
+        $variables['prescriptionLink'] = $prescriptionLink;
+      }
+      break;
+  }
+
+}
