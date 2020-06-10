@@ -68,7 +68,7 @@
  */
 #}
 {{ attach_library('brookshirebrothers/store-location') }}
-<div id="address">{{ node.field_address.value }},
+<div id="address" class="has-text-weight-bold">{{ node.field_address.value }},
   {{ node.field_city.value }}
   {{ node.field_state.value }}
   {{ node.field_zip_code.value }}
@@ -93,6 +93,16 @@
   {% endif %}
 </div>
 
+<div id="signup">
+  {% if node.field_bbros_text_signup__c.value|length %}
+    <div class="has-text-weight-bold">Sign up to Brookshire Brothers Promo Alerts:</div>
+    <div>{{ node.field_bbros_text_signup__c.value }}</div>
+  {% endif %}
+  {% if node.field_tbarn_text_signup__c.value|length %}
+    <div class="has-text-weight-bold">Sign up to Tobacco Barn Promo Alerts:</div>
+    <div>{{ node.field_tbarn_text_signup__c.value }}</div>{% endif %}
+</div>
+
 <div id="hours">
   <div>Hours:</div> <div>{{ node.field_store_hours.value }}</div>
   <div>Manager:</div> <div>{{ node.field_store_manager.value }}</div>
@@ -100,7 +110,71 @@
 </div>
 
 <div id="features">
-  <div>Hours:</div> <div>{{ node.field_store_hours.value }}</div>
-  <div>Manager:</div> <div>{{ node.field_store_manager.value }}</div>
-  <div>Phone:</div> <div>{{ node.field_store_phone.value }}</div>
+  <div><h2 class="has-text-weight-bold">Features</h2></div> <div> </div>
+  <div>Pharmacy:</div> <div>{% if pharmacy %}<i class="fas fa-check"> </i>{% else %}<i class="fas fa-times"> </i>{% endif %}</div>
+  <div>Drive-Thru Pharmacy:</div> <div>{% if driveThruPharmacy %}<i class="fas fa-check"> </i>{% else %}<i class="fas fa-times"> </i>{% endif %}</div>
+  <div>Flu Shots:</div> <div>{% if fluShot %}<i class="fas fa-check"> </i>{% else %}<i class="fas fa-times"> </i>{% endif %}</div>
+  <div>Beverage Depot:</div> <div>{% if beverageDepot %}<i class="fas fa-check"> </i>{% else %}<i class="fas fa-times"> </i>{% endif %}</div>
+  <div>Bakery:</div> <div>{% if bakery %}<i class="fas fa-check"> </i>{% else %}<i class="fas fa-times"> </i>{% endif %}</div>
+  <div>Deli:</div> <div>{% if deli %}<i class="fas fa-check"> </i>{% else %}<i class="fas fa-times"> </i>{% endif %}</div>
+  <div>Floral:</div> <div>{% if floral %}<i class="fas fa-check"> </i>{% else %}<i class="fas fa-times"> </i>{% endif %}</div>
+  <div>Bissell Rental:</div> <div>{% if bissellRental %}<i class="fas fa-check"> </i>{% else %}<i class="fas fa-times"> </i>{% endif %}</div>
+  <div>Redbox:</div> <div>{% if redbox %}<i class="fas fa-check"> </i>{% else %}<i class="fas fa-times"> </i>{% endif %}</div>
+  <div>Tobacco Barn:</div> <div>{% if tobaccoBarn %}<i class="fas fa-check"> </i>{% else %}<i class="fas fa-times"> </i>{% endif %}</div>
+  <div>Subway:</div> <div>{% if subway %}<i class="fas fa-check"> </i>{% else %}<i class="fas fa-times"> </i>{% endif %}</div>
+  <div>Washateria:</div> <div>{% if washateria %}<i class="fas fa-check"> </i>{% else %}<i class="fas fa-times"> </i>{% endif %}</div>
+  <div>Mr. Payroll:</div> <div>{% if mrPayroll %}<i class="fas fa-check"> </i>{% else %}<i class="fas fa-times"> </i>{% endif %}</div>
+  <div>Car Wash:</div> <div>{% if carWash %}<i class="fas fa-check"> </i>{% else %}<i class="fas fa-times"> </i>{% endif %}</div>
+  {% if fuel %}<div>Fuel:</div> <div>{{ node.field_fuel_brand.value }}</div>{% endif %}
 </div>
+
+{% if pharmacy %}
+<div id="pharmacy">
+  <div><h2 class="has-text-weight-bold">Pharmacy</h2></div> <div> </div>
+  <div>Pharmacy Hours:</div> <div>{{ node.field_pharmacy_hours.value }}</div>
+  <div>Pharmacist:</div> <div>{{ node.field_pharmacist.value }}</div>
+  <div>Pharmacy Phone:</div> <div>{{ node.field_pharmacy_phone.value }}</div>
+  <div>Pharmacy Fax:</div> <div>{{ node.field_pharmacy_fax.value }}</div>
+  <div>State Board #:</div> <div>{{ node.field_state_board_number.value }}</div>
+</div>
+{% endif %}
+
+{% if tobaccoBarn %}
+  <div id="tobaccoBarn">
+    <div><h2 class="has-text-weight-bold">Tobacco Barn</h2></div> <div> </div>
+    <div>Hours:</div> <div>{{ node.field_barn_hours.value }}</div>
+    <div>Manager:</div> <div>{{ node.field_barn_manager.value }}</div>
+    <div>Barn #:</div> <div>{{ node.field_barn_number.value }}</div>
+  </div>
+{% endif %}
+
+{% if subway %}
+  <div id="subway">
+    <div><h2 class="has-text-weight-bold">Subway</h2></div> <div> </div>
+    <div>Phone:</div> <div>{{ node.field_subway_phone.value }}</div>
+    <div>Director:</div> <div>{{ node.field_subway_director.value }}</div>
+  </div>
+{% endif %}
+
+{% if washateria %}
+  <div id="washateria">
+    <div><h2 class="has-text-weight-bold">Washateria</h2></div> <div> </div>
+    <div>Phone:</div> <div>{{ node.field_washateria_phone.value }}</div>
+    <div>Director:</div> <div>{{ node.field_washateria_director.value }}</div>
+  </div>
+{% endif %}
+
+{% if carWash %}
+  <div id="carWash">
+    <div><h2 class="has-text-weight-bold">Car Wash</h2></div> <div> </div>
+    <div>Phone:</div> <div>{{ node.field_car_wash_phone.value }}</div>
+    <div>Director:</div> <div>{{ node.field_car_wash_director.value }}</div>
+  </div>
+{% endif %}
+
+{% if mrPayroll %}
+  <div id="mrPayroll">
+    <div><h2 class="has-text-weight-bold">Mr. Payroll</h2></div> <div> </div>
+    <div>Phone:</div> <div>{{ node.field_mr_payroll_phone.value }}</div>
+  </div>
+{% endif %}

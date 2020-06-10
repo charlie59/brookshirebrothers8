@@ -3,10 +3,6 @@
   padding: 2rem;
 }
 
-#address {
-  font-weight: bold;
-}
-
 #links {
   margin-top: 1rem;
   display: flex;
@@ -25,6 +21,10 @@
   margin-left: 1rem;
 }
 
+.fa-times {
+  color: #e2231a;
+}
+
 #links a {
   color: #e2231a;
 }
@@ -36,7 +36,25 @@
 }
 
 #hours {
-  margin-top: 2rem;
+  margin-top: 1rem;
   display: grid;
   grid-template-columns: 15% auto;
+}
+
+#signup {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: 50% auto;
+}
+
+#features {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: 30% auto;
+}
+
+#pharmacy, #fuel, #tobaccoBarn, #subway, #washateria, #carWash, #mrPayroll {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: 30% auto;
 }
